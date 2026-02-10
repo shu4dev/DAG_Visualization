@@ -1,0 +1,40 @@
+{
+  "name": "dag-visualization-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "3D Layered DAG Visualization with Time-Sliced Text/Word Analysis",
+  "author": "Brian Shu, Erhan Huang, Gian-Carlo Kekoa Panoy, Xingyao He",
+  "license": "MIT",
+  "scripts": {
+    "dev": "pnpm --filter app dev",
+    "build": "pnpm -r --filter='!examples' build",
+    "build:all": "pnpm -r build",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "clean": "pnpm -r --parallel clean",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

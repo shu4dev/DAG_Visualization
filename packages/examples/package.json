@@ -1,0 +1,19 @@
+{
+  "name": "@dag-viz/examples",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@dag-viz/types": "workspace:*",
+    "@dag-viz/core": "workspace:*",
+    "@dag-viz/physics": "workspace:*",
+    "@dag-viz/text-analysis": "workspace:*",
+    "@dag-viz/utils": "workspace:*"
+  }
+}

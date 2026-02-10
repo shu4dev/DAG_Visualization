@@ -1,0 +1,262 @@
+{
+  "metadata": {
+    "title": "Word Frequency Timeline - Tech News 2025",
+    "description": "Monthly word frequencies from technology news articles",
+    "timeUnit": "month",
+    "dataSource": "sample-tech-news"
+  },
+  "layers": [
+    {
+      "id": "layer-2025-01",
+      "index": 0,
+      "label": "January 2025",
+      "timestamp": "2025-01-01"
+    },
+    {
+      "id": "layer-2025-02",
+      "index": 1,
+      "label": "February 2025",
+      "timestamp": "2025-02-01"
+    },
+    {
+      "id": "layer-2025-03",
+      "index": 2,
+      "label": "March 2025",
+      "timestamp": "2025-03-01"
+    },
+    {
+      "id": "layer-2025-04",
+      "index": 3,
+      "label": "April 2025",
+      "timestamp": "2025-04-01"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ai-0",
+      "label": "AI",
+      "layerIndex": 0,
+      "weight": 156,
+      "metadata": {
+        "frequency": 156,
+        "documents": 45,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "ai-1",
+      "label": "AI",
+      "layerIndex": 1,
+      "weight": 203,
+      "metadata": {
+        "frequency": 203,
+        "documents": 62,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "ai-2",
+      "label": "AI",
+      "layerIndex": 2,
+      "weight": 189,
+      "metadata": {
+        "frequency": 189,
+        "documents": 58,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "ai-3",
+      "label": "AI",
+      "layerIndex": 3,
+      "weight": 221,
+      "metadata": {
+        "frequency": 221,
+        "documents": 71,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "ml-0",
+      "label": "machine learning",
+      "layerIndex": 0,
+      "weight": 89,
+      "metadata": {
+        "frequency": 89,
+        "documents": 28,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "ml-1",
+      "label": "machine learning",
+      "layerIndex": 1,
+      "weight": 112,
+      "metadata": {
+        "frequency": 112,
+        "documents": 35,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "ml-2",
+      "label": "machine learning",
+      "layerIndex": 2,
+      "weight": 98,
+      "metadata": {
+        "frequency": 98,
+        "documents": 32,
+        "category": "technology"
+      }
+    },
+    {
+      "id": "cloud-0",
+      "label": "cloud",
+      "layerIndex": 0,
+      "weight": 67,
+      "metadata": {
+        "frequency": 67,
+        "documents": 22,
+        "category": "infrastructure"
+      }
+    },
+    {
+      "id": "cloud-1",
+      "label": "cloud",
+      "layerIndex": 1,
+      "weight": 73,
+      "metadata": {
+        "frequency": 73,
+        "documents": 24,
+        "category": "infrastructure"
+      }
+    },
+    {
+      "id": "cloud-2",
+      "label": "cloud",
+      "layerIndex": 2,
+      "weight": 81,
+      "metadata": {
+        "frequency": 81,
+        "documents": 27,
+        "category": "infrastructure"
+      }
+    },
+    {
+      "id": "cloud-3",
+      "label": "cloud",
+      "layerIndex": 3,
+      "weight": 76,
+      "metadata": {
+        "frequency": 76,
+        "documents": 25,
+        "category": "infrastructure"
+      }
+    },
+    {
+      "id": "quantum-2",
+      "label": "quantum",
+      "layerIndex": 2,
+      "weight": 34,
+      "metadata": {
+        "frequency": 34,
+        "documents": 12,
+        "category": "emerging"
+      }
+    },
+    {
+      "id": "quantum-3",
+      "label": "quantum",
+      "layerIndex": 3,
+      "weight": 52,
+      "metadata": {
+        "frequency": 52,
+        "documents": 18,
+        "category": "emerging"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-ai-0-1",
+      "sourceId": "ai-0",
+      "targetId": "ai-1",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.95
+      }
+    },
+    {
+      "id": "edge-ai-1-2",
+      "sourceId": "ai-1",
+      "targetId": "ai-2",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.92
+      }
+    },
+    {
+      "id": "edge-ai-2-3",
+      "sourceId": "ai-2",
+      "targetId": "ai-3",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.97
+      }
+    },
+    {
+      "id": "edge-ml-0-1",
+      "sourceId": "ml-0",
+      "targetId": "ml-1",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.87
+      }
+    },
+    {
+      "id": "edge-ml-1-2",
+      "sourceId": "ml-1",
+      "targetId": "ml-2",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.83
+      }
+    },
+    {
+      "id": "edge-cloud-0-1",
+      "sourceId": "cloud-0",
+      "targetId": "cloud-1",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.91
+      }
+    },
+    {
+      "id": "edge-cloud-1-2",
+      "sourceId": "cloud-1",
+      "targetId": "cloud-2",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.94
+      }
+    },
+    {
+      "id": "edge-cloud-2-3",
+      "sourceId": "cloud-2",
+      "targetId": "cloud-3",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.88
+      }
+    },
+    {
+      "id": "edge-quantum-2-3",
+      "sourceId": "quantum-2",
+      "targetId": "quantum-3",
+      "metadata": {
+        "type": "temporal-continuation",
+        "strength": 0.78
+      }
+    }
+  ]
+}
