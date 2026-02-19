@@ -1,1 +1,0 @@
-export { PhysicsSimulation } from './PhysicsSimulation'

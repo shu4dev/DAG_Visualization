@@ -1,215 +1,209 @@
 # 3D Layered DAG Visualization
 
-An interactive 3D visualization tool for hierarchical layered directed acyclic graphs (DAGs) with force-directed layout. Primary application: time-sliced text/word analysis.
+Interactive 3D visualization tool for hierarchical layered directed acyclic graphs (DAGs), with a focus on time-sliced text/word frequency analysis.
 
-## Features
+Built with **React + Vite + 3d-force-graph + d3-force-3d + Three.js**.
 
-- **Interactive 3D Visualization**: Rotate, pan, zoom, and explore layered graphs in 3D space
-- **Force-Directed Layout**: Physics-based layout with:
-  - Within-layer repulsion (reduces node overlap)
-  - Cross-layer spring forces (aligns connected nodes)
-  - Layer anchoring (maintains hierarchical structure)
-  - Tunable parameters for customization
-- **Time-Sliced Word Analysis**: Visualize word frequency changes across time periods
-- **Node Interaction**: Select nodes to inspect metadata, drag nodes with physics re-stabilization
-- **Flexible Data Format**: JSON/CSV input with extensible metadata
+![Stack: React, Three.js, d3-force-3d]
 
-## Tech Stack
-
-- **Frontend**: React + TypeScript
-- **3D Rendering**: Three.js + React Three Fiber
-- **Build Tool**: Vite
-- **Monorepo**: pnpm workspaces
-- **Testing**: Vitest
-- **Linting**: ESLint + Prettier
-
-## Project Structure
-
-This is a monorepo containing 7 packages:
-
-```
-packages/
-├── types/           - Shared TypeScript type definitions
-├── utils/           - Utility functions (math, data, colors)
-├── core/            - DAG data structures and operations
-├── physics/         - Force-directed layout engine
-├── text-analysis/   - Text processing and word frequency
-├── renderer/        - Three.js/R3F visualization components
-└── app/             - Main React application
-```
+---
 
 ## Quick Start
 
-### Prerequisites
-
-- Node.js >= 18.0.0
-- pnpm >= 8.0.0
-
-### Installation
-
 ```bash
-# Install pnpm if needed
-npm install -g pnpm
-
 # Install dependencies
-pnpm install
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-### Development
+The app opens at `http://localhost:3000` with sample data pre-loaded.
 
-```bash
-# Start dev server (opens at http://localhost:3000)
-pnpm dev
+---
 
-# Run tests
-pnpm test
+## Features
 
-# Lint code
-pnpm lint
+- **3D Force-Directed Layout**: Nodes arranged in layers along the Z axis with physics-based positioning
+- **Custom Forces**:
+  - Layer anchoring (nodes attracted to their layer plane)
+  - Within-layer repulsion (same-layer nodes spread out)
+  - Edge springs (connected nodes pull toward alignment)
+  - Configurable damping and decay
+- **Interactions**: Rotate, pan, zoom, click to inspect nodes, drag nodes with re-stabilization
+- **Data Loading**: Built-in sample data, JSON file upload, or API endpoint fetching
+- **Tunable Parameters**: Real-time sliders for all force parameters
 
-# Type check
-pnpm typecheck
+---
 
-# Build all packages
-pnpm build
+## Project Structure
+
+```
+src/
+├── main.jsx                  # Entry point
+├── App.jsx                   # Root component, state management
+├── components/
+│   ├── GraphView.jsx         # 3D force graph rendering & interaction
+│   ├── ControlPanel.jsx      # Side panel with force parameter sliders
+│   ├── NodeInfo.jsx          # Selected node metadata overlay
+│   └── StatusBar.jsx         # Bottom stats bar
+├── data/
+│   └── sampleData.js         # Sample data generator & parsers
+├── hooks/
+│   └── useForceConfig.js     # Force parameter state management
+├── utils/
+│   └── forces.js             # Custom d3-force-3d force functions
+└── styles/
+    └── global.css            # Application styles
 ```
 
-## Sample Data
-
-Sample data files are provided in `packages/app/public/sample-data/`:
-
-- **simple-dag.json**: Basic 3-layer DAG example
-- **word-frequency-timeline.json**: Time-sliced word frequency data (tech news, Jan-Apr 2025)
+---
 
 ## Data Format
 
-Input data follows this JSON structure:
+The app expects graph data in this JSON structure:
 
 ```json
 {
-  "metadata": {
-    "title": "Graph Title",
-    "timeUnit": "month"
-  },
-  "layers": [
-    { "id": "layer-0", "index": 0, "label": "January 2025" }
-  ],
   "nodes": [
     {
-      "id": "node-1",
+      "id": "word_0",
       "label": "AI",
-      "layerIndex": 0,
-      "weight": 156,
-      "metadata": { "frequency": 156 }
+      "layer": 0,
+      "weight": 80,
+      "color": "#3b82f6",
+      "metadata": {
+        "word": "AI",
+        "timeSlice": "Jan 2025",
+        "frequency": 80,
+        "trend": 0
+      }
     }
   ],
-  "edges": [
+  "links": [
     {
-      "id": "edge-1",
-      "sourceId": "node-1",
-      "targetId": "node-2"
+      "source": "word_0",
+      "target": "word_1",
+      "value": 85
     }
+  ],
+  "layers": [
+    { "label": "Jan 2025", "index": 0 },
+    { "label": "Feb 2025", "index": 1 }
   ]
 }
 ```
 
-**Key constraints:**
-- Edges must point forward (source layer < target layer)
-- Layer indices must be sequential (0, 1, 2, ...)
-- No cycles allowed (DAG property)
+### Node Fields
 
-See [Data Formats Guide](docs/guides/data-formats.md) for details.
+| Field       | Required | Description                                    |
+|-------------|----------|------------------------------------------------|
+| `id`        | Yes      | Unique identifier                              |
+| `label`     | No       | Display label (defaults to `id`)               |
+| `layer`     | Yes      | Integer layer/time index                       |
+| `weight`    | No       | Node size weight (e.g., frequency). Default: 1 |
+| `color`     | No       | Hex color. Auto-assigned by layer if omitted   |
+| `metadata`  | No       | Arbitrary key-value pairs for inspection        |
 
-## Documentation
+### Link Fields
 
-- [Getting Started](docs/guides/getting-started.md)
-- [Data Formats](docs/guides/data-formats.md)
-- [Architecture Overview](docs/architecture/overview.md)
-- [API Documentation](docs/api/)
+| Field    | Required | Description                         |
+|----------|----------|-------------------------------------|
+| `source` | Yes      | Source node `id`                    |
+| `target` | Yes      | Target node `id` (must be in a later layer) |
+| `value`  | No       | Edge weight/thickness. Default: 1   |
 
-## Project Goals (SMART)
+### Layer Fields
 
-Based on the [Project Requirements Document](Project_Requirement_Documents.pdf):
+| Field   | Required | Description              |
+|---------|----------|--------------------------|
+| `label` | No       | Human-readable label     |
+| `index` | Yes      | Integer layer index      |
 
-1. **Basic Prototype** (3 weeks): Working visualization with nodes, edges, 2+ layers
-2. **Visualization of Change** (5 weeks): Word frequency changes across time layers
-3. **Interaction & Navigation** (9 weeks): Full interaction (zoom, rotate, select, drag)
+---
 
-## Must-Have Features
+## API Integration
 
-- ✅ Layered DAG input format (JSON/CSV)
-- ✅ Interactive 3D visualization with force-directed layout
-- ✅ Camera controls (rotate, pan, zoom)
-- ✅ Node selection and dragging with re-stabilization
-- ✅ Tunable force parameters
-- 🚧 Time-sliced text to layered DAG conversion
+To load data from an API, enter the endpoint URL in the control panel and click **Fetch**. The endpoint should return JSON in the format above.
 
-## Roadmap
+Example API handler (Express.js):
 
-### Current Focus
-- Implement core visualization components
-- Build physics simulation engine
-- Create sample text analysis pipeline
-
-### Future Enhancements
-- NVivo integration for qualitative analysis workflows
-- Automated text ingestion and time slicing
-- Enhanced UI with presets and guided tours
-- Performance optimizations for large graphs
-
-## Development
-
-### Monorepo Commands
-
-```bash
-# Run command in specific package
-pnpm --filter app dev
-pnpm --filter core test
-
-# Run command in all packages
-pnpm -r build          # All packages
-pnpm -r --parallel test  # In parallel
+```javascript
+app.get('/api/graph', async (req, res) => {
+  // Query your database, run text analysis, etc.
+  const graphData = await buildGraphFromCorpus(req.query);
+  res.json(graphData);
+});
 ```
 
-### Adding Dependencies
+---
 
-```bash
-# Add to specific package
-pnpm --filter @dag-viz/core add lodash
+## Customizing Forces
 
-# Add to root (dev dependencies)
-pnpm add -D -w eslint
+All force parameters are tunable via the control panel sliders:
+
+| Parameter            | Description                                  | Default |
+|----------------------|----------------------------------------------|---------|
+| Layer Anchor Strength| How strongly nodes stick to their layer plane | 0.5     |
+| Layer Spacing        | Distance between layer planes (world units)  | 120     |
+| In-Layer Repulsion   | Repulsion between same-layer nodes           | -60     |
+| Repulsion Range      | Max distance for in-layer repulsion          | 150     |
+| Global Charge        | General node-node repulsion (all layers)     | -30     |
+| Spring Strength      | Edge spring pull strength                    | 0.3     |
+| Rest Length           | Natural length of edge springs               | 60      |
+| Alpha Decay          | How fast the simulation cools (lower = longer)| 0.02   |
+| Velocity Decay       | Friction/damping on node movement            | 0.4     |
+
+### Adding Custom Forces
+
+Edit `src/utils/forces.js` to add new force functions. Any function following the d3-force interface can be registered:
+
+```javascript
+// In GraphView.jsx
+graph.d3Force('myCustomForce', myForceFunction);
 ```
 
-### Creating a Changeset
+---
+
+## Extending the Template
+
+### Adding NVivo / External Tool Integration
+
+1. Export data from NVivo as CSV or JSON
+2. Write a parser in `src/data/` to convert to the graph format above
+3. Add a new button in `ControlPanel.jsx` to trigger the import
+
+### Adding a Backend
+
+1. Create an API (Express, FastAPI, etc.) that serves graph data
+2. Use the API URL input in the control panel, or
+3. Modify `fetchGraphData()` in `sampleData.js` to point to your backend
+
+### Deployment
 
 ```bash
-pnpm changeset
+npm run build
+# Deploy the `dist/` folder to any static host (Vercel, Netlify, GitHub Pages, etc.)
 ```
 
-## Contributing
+---
 
-1. Create a feature branch
-2. Make your changes
-3. Add tests for new functionality
-4. Ensure `pnpm lint` and `pnpm typecheck` pass
-5. Create a changeset if needed
-6. Submit a pull request
+## Dependencies
 
-## Authors
+| Package           | Purpose                                 |
+|-------------------|-----------------------------------------|
+| `react`           | UI framework                            |
+| `3d-force-graph`  | 3D force-directed graph visualization   |
+| `d3-force-3d`     | 3D force simulation engine              |
+| `three`           | WebGL 3D rendering                      |
+| `three-spritetext`| Text labels in 3D scene                 |
+| `vite`            | Build tool & dev server                 |
 
-- Brian Shu
-- Erhan Huang
-- Gian-Carlo Kekoa Panoy
-- Xingyao He
+---
 
 ## License
 
 MIT
-
-## References
-
-- [Project Requirements PDF](Project_Requirement_Documents.pdf)
-- [Three.js Documentation](https://threejs.org/docs/)
-- [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/)
-- [pnpm Workspaces](https://pnpm.io/workspaces)
