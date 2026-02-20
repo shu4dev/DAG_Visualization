@@ -79,12 +79,19 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
           1000
         );
       })
-      .onNodeDragEnd((node) => {
-        // Fix node position after drag
-        node.fx = node.x;
-        node.fy = node.y;
-        node.fz = node.z;
-      })
+    .onNodeDrag((node) => {
+      node.fx = node.x;
+      node.fy = node.y;
+      node.fz = (node.layer || 0) * config.layerSpacing;
+      node.vx = 0; node.vy = 0; node.vz = 0;
+})
+    .onNodeDragEnd((node) => {
+      node.fx = node.x;
+      node.fy = node.y;
+      node.fz = (node.layer || 0) * config.layerSpacing;
+      graph.d3ReheatSimulation();
+})
+
       .onBackgroundClick(() => {
         if (onNodeSelect) onNodeSelect(null);
       });
