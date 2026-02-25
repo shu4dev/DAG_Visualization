@@ -83,10 +83,44 @@ html, body, #root {
   background: var(--bg-panel);
   border-left: 1px solid var(--border-subtle);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  transition: width 0.25s ease, min-width 0.25s ease, padding 0.25s ease;
+}
+
+.control-panel.collapsed {
+  width: 48px;
+  min-width: 48px;
+  padding: 12px 10px;
+  overflow-y: hidden;
+  gap: 0;
+}
+
+.panel-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.panel-toggle:hover {
+  background: var(--bg-panel-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
 }
 
 .panel-header {

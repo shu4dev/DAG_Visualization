@@ -36,28 +36,37 @@ export function generateSampleData() {
     { label: 'May 2025', index: 4 },
   ];
 
-  // Words with their frequencies per time slice (0 = absent)
+  // Words with their frequencies per time slice.
+  // Values are intentionally spread across a wide range to create a clear
+  // word-cloud effect: dominant words (100-170) vs niche words (5-30).
   const wordData = {
-    'AI':           [80, 90, 95, 92, 100],
-    'machine':      [60, 65, 62, 58, 55],
-    'learning':     [70, 72, 68, 75, 78],
-    'neural':       [40, 45, 50, 55, 60],
-    'network':      [50, 48, 52, 50, 53],
-    'transformer':  [30, 45, 60, 70, 85],
-    'attention':    [25, 35, 50, 55, 65],
-    'data':         [90, 88, 85, 82, 80],
-    'model':        [75, 78, 82, 85, 88],
-    'training':     [55, 58, 60, 62, 65],
-    'inference':    [20, 30, 40, 50, 60],
-    'GPU':          [35, 40, 45, 50, 55],
-    'cloud':        [60, 58, 55, 52, 50],
-    'edge':         [10, 15, 25, 35, 45],
-    'deployment':   [30, 35, 38, 42, 48],
-    'safety':       [15, 25, 40, 55, 70],
-    'alignment':    [10, 20, 35, 50, 65],
-    'agent':        [5,  15, 30, 55, 80],
-    'reasoning':    [20, 25, 35, 50, 70],
-    'multimodal':   [10, 20, 35, 50, 60],
+    // Dominant throughout
+    'AI':           [120, 140, 158, 155, 170],
+    'data':         [110, 105, 108, 100,  95],
+    'model':        [ 90,  95, 108, 115, 120],
+
+    // Rising stars — small early, huge by May
+    'agent':        [  8,  22,  50,  95, 145],
+    'transformer':  [ 30,  52,  80, 108, 125],
+    'safety':       [ 12,  28,  58,  85, 110],
+    'reasoning':    [ 18,  32,  55,  80, 100],
+    'alignment':    [  8,  18,  32,  55,  80],
+
+    // Moderate & stable
+    'learning':     [ 70,  72,  68,  72,  70],
+    'training':     [ 60,  62,  65,  60,  58],
+    'neural':       [ 55,  58,  60,  58,  55],
+    'cloud':        [ 65,  60,  55,  50,  45],
+
+    // Small / niche
+    'network':      [ 40,  38,  35,  32,  30],
+    'inference':    [ 18,  25,  32,  42,  50],
+    'multimodal':   [ 10,  20,  38,  52,  65],
+    'GPU':          [ 28,  32,  35,  30,  28],
+    'deployment':   [ 22,  28,  30,  35,  38],
+    'attention':    [ 20,  30,  45,  50,  58],
+    'edge':         [  6,  10,  18,  28,  38],
+    'machine':      [ 48,  45,  40,  35,  30],
   };
 
   const nodes = [];

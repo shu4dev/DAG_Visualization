@@ -1,7 +1,7 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import ForceGraph3D from '3d-force-graph';
 import SpriteText from 'three-spritetext';
-import * as THREE from 'three';
+
 import { forceLayerAnchor, forceWithinLayerRepulsion } from '../utils/forces';
 import { getLayerColor } from '../data/sampleData';
 
@@ -26,36 +26,28 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
       // --- Node rendering ---
+      // nodeVal drives sphere volume via the built-in renderer (radius = nodeRelSize × ∛nodeVal).
+      // Using weight² gives radius ∝ weight^(2/3) for a clear word-cloud size spread.
+      .nodeRelSize(0.3)
+      .nodeVal((node) => Math.pow(node.weight || 10, 2))
+      .nodeColor((node) => node.color || '#3b82f6')
+      .nodeOpacity(0.85)
+      // Extend mode: add label sprite on top of the built-in sphere instead of replacing it
+      .nodeThreeObjectExtend(true)
       .nodeThreeObject((node) => {
-        const group = new THREE.Group();
-
-        // Sphere sized by weight
-        const radius = Math.max(2, (node.weight || 10) / 10) * config.nodeScale;
-        const geometry = new THREE.SphereGeometry(radius, 16, 12);
-        const material = new THREE.MeshLambertMaterial({
-          color: node.color || '#3b82f6',
-          transparent: true,
-          opacity: 0.85,
-        });
-        const sphere = new THREE.Mesh(geometry, material);
-        group.add(sphere);
-
-        // Label
-        if (config.showLabels) {
-          const sprite = new SpriteText(node.label || node.id);
-          sprite.color = '#e2e8f0';
-          sprite.textHeight = Math.max(3, radius * 0.8);
-          sprite.position.y = radius + 4;
-          sprite.fontFace = 'DM Sans, sans-serif';
-          sprite.backgroundColor = 'rgba(15, 23, 42, 0.7)';
-          sprite.padding = 1.5;
-          sprite.borderRadius = 3;
-          group.add(sprite);
-        }
-
-        return group;
+        if (!config.showLabels) return false;
+        // Mirror the library's radius formula so the label sits just above the sphere
+        const approxRadius = 0.3 * Math.cbrt(Math.pow(node.weight || 10, 2));
+        const sprite = new SpriteText(node.label || node.id);
+        sprite.color = '#e2e8f0';
+        sprite.textHeight = Math.max(2.5, approxRadius * 0.6);
+        sprite.position.y = approxRadius + 3;
+        sprite.fontFace = 'DM Sans, sans-serif';
+        sprite.backgroundColor = 'rgba(15, 23, 42, 0.7)';
+        sprite.padding = 1.5;
+        sprite.borderRadius = 3;
+        return sprite;
       })
-      .nodeVal((node) => node.weight || 10)
       // --- Edge rendering ---
       .linkColor((link) => {
         const sourceNode = typeof link.source === 'object' ? link.source : null;
@@ -113,12 +105,10 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     // Set graph data
     graph.graphData(graphData);
 
-    // Position camera to see all layers
-    const maxLayer = Math.max(...graphData.nodes.map((n) => n.layer || 0));
-    const centerZ = (maxLayer * config.layerSpacing) / 2;
+    // Position camera for a horizontal front-on view of layer 0
     setTimeout(() => {
-      graph.cameraPosition({ x: 300, y: 200, z: centerZ }, { x: 0, y: 0, z: centerZ }, 1500);
-    }, 500);
+      graph.cameraPosition({ x: 0, y: 80, z: 700 }, { x: 0, y: 0, z: 0 }, 0);
+    }, 100);
 
     graphRef.current = graph;
 

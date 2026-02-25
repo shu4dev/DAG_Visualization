@@ -4,8 +4,6 @@ Interactive 3D visualization tool for hierarchical layered directed acyclic grap
 
 Built with **React + Vite + 3d-force-graph + d3-force-3d + Three.js**.
 
-![Stack: React, Three.js, d3-force-3d]
-
 ---
 
 ## Quick Start
