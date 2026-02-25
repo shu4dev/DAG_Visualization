@@ -25,20 +25,6 @@ The app opens at `http://localhost:3000` with sample data pre-loaded.
 
 ---
 
-## Features
-
-- **3D Force-Directed Layout**: Nodes arranged in layers along the Z axis with physics-based positioning
-- **Custom Forces**:
-  - Layer anchoring (nodes attracted to their layer plane)
-  - Within-layer repulsion (same-layer nodes spread out)
-  - Edge springs (connected nodes pull toward alignment)
-  - Configurable damping and decay
-- **Interactions**: Rotate, pan, zoom, click to inspect nodes, drag nodes with re-stabilization
-- **Data Loading**: Built-in sample data, JSON file upload, or API endpoint fetching
-- **Tunable Parameters**: Real-time sliders for all force parameters
-
----
-
 ## Project Structure
 
 ```
@@ -62,39 +48,6 @@ src/
 
 ---
 
-## Data Format
-
-The app expects graph data in this JSON structure:
-
-```json
-{
-  "nodes": [
-    {
-      "id": "word_0",
-      "label": "AI",
-      "layer": 0,
-      "weight": 80,
-      "color": "#3b82f6",
-      "metadata": {
-        "word": "AI",
-        "timeSlice": "Jan 2025",
-        "frequency": 80,
-        "trend": 0
-      }
-    }
-  ],
-  "links": [
-    {
-      "source": "word_0",
-      "target": "word_1",
-      "value": 85
-    }
-  ],
-  "layers": [
-    { "label": "Jan 2025", "index": 0 },
-    { "label": "Feb 2025", "index": 1 }
-  ]
-}
 ```
 
 ### Node Fields
@@ -125,22 +78,6 @@ The app expects graph data in this JSON structure:
 
 ---
 
-## API Integration
-
-To load data from an API, enter the endpoint URL in the control panel and click **Fetch**. The endpoint should return JSON in the format above.
-
-Example API handler (Express.js):
-
-```javascript
-app.get('/api/graph', async (req, res) => {
-  // Query your database, run text analysis, etc.
-  const graphData = await buildGraphFromCorpus(req.query);
-  res.json(graphData);
-});
-```
-
----
-
 ## Customizing Forces
 
 All force parameters are tunable via the control panel sliders:
@@ -156,39 +93,6 @@ All force parameters are tunable via the control panel sliders:
 | Rest Length           | Natural length of edge springs               | 60      |
 | Alpha Decay          | How fast the simulation cools (lower = longer)| 0.02   |
 | Velocity Decay       | Friction/damping on node movement            | 0.4     |
-
-### Adding Custom Forces
-
-Edit `src/utils/forces.js` to add new force functions. Any function following the d3-force interface can be registered:
-
-```javascript
-// In GraphView.jsx
-graph.d3Force('myCustomForce', myForceFunction);
-```
-
----
-
-## Extending the Template
-
-### Adding NVivo / External Tool Integration
-
-1. Export data from NVivo as CSV or JSON
-2. Write a parser in `src/data/` to convert to the graph format above
-3. Add a new button in `ControlPanel.jsx` to trigger the import
-
-### Adding a Backend
-
-1. Create an API (Express, FastAPI, etc.) that serves graph data
-2. Use the API URL input in the control panel, or
-3. Modify `fetchGraphData()` in `sampleData.js` to point to your backend
-
-### Deployment
-
-```bash
-npm run build
-# Deploy the `dist/` folder to any static host (Vercel, Netlify, GitHub Pages, etc.)
-```
-
 ---
 
 ## Dependencies
@@ -203,7 +107,3 @@ npm run build
 | `vite`            | Build tool & dev server                 |
 
 ---
-
-## License
-
-MIT
