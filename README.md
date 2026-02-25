@@ -48,8 +48,6 @@ src/
 
 ---
 
-```
-
 ### Node Fields
 
 | Field       | Required | Description                                    |
@@ -76,23 +74,6 @@ src/
 | `label` | No       | Human-readable label     |
 | `index` | Yes      | Integer layer index      |
 
----
-
-## Customizing Forces
-
-All force parameters are tunable via the control panel sliders:
-
-| Parameter            | Description                                  | Default |
-|----------------------|----------------------------------------------|---------|
-| Layer Anchor Strength| How strongly nodes stick to their layer plane | 0.5     |
-| Layer Spacing        | Distance between layer planes (world units)  | 120     |
-| In-Layer Repulsion   | Repulsion between same-layer nodes           | -60     |
-| Repulsion Range      | Max distance for in-layer repulsion          | 150     |
-| Global Charge        | General node-node repulsion (all layers)     | -30     |
-| Spring Strength      | Edge spring pull strength                    | 0.3     |
-| Rest Length           | Natural length of edge springs               | 60      |
-| Alpha Decay          | How fast the simulation cools (lower = longer)| 0.02   |
-| Velocity Decay       | Friction/damping on node movement            | 0.4     |
 ---
 
 ## Dependencies
