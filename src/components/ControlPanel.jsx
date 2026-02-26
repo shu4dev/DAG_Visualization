@@ -89,6 +89,16 @@ export default function ControlPanel({
               <label>
                 <input
                   type="checkbox"
+                  checked={config.showLayerPlanes}
+                  onChange={(e) => updateConfig('showLayerPlanes', e.target.checked)}
+                />
+                <span>Show Layers</span>
+              </label>
+            </div>
+            <div className="toggle-control">
+              <label>
+                <input
+                  type="checkbox"
                   checked={config.showForceField}
                   onChange={(e) => updateConfig('showForceField', e.target.checked)}
                 />

@@ -1,25 +1,12 @@
 import { useState, useCallback } from 'react';
 
 /**
- * Hook to manage force simulation parameters.
- * Provides current values and setters for all tunable forces.
+ * Hook to manage visual configuration settings.
  */
 export function useForceConfig() {
   const [config, setConfig] = useState({
-    // Layer anchoring
-    layerStrength: 0.5,
-    layerSpacing: 120,
-
-    // Within-layer repulsion
-    repulsionStrength: -60,
+    repulsionStrength: -30,
     repulsionMaxDistance: 150,
-
-    // Simulation damping
-    alphaDecay: 0.02,
-    velocityDecay: 0.4,
-
-    // Visual
-    nodeScale: 1.0,
     showLabels: true,
     showLayerPlanes: true,
     showLinks: true,

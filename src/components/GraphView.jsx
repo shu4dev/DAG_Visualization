@@ -3,7 +3,7 @@ import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
 
-import { forceLayerAnchor, forceWithinLayerRepulsion } from '../utils/forces';
+import { forceWithinLayerRepulsion } from '../utils/forces';
 import { getLayerColor } from '../data/sampleData';
 
 /**
@@ -16,13 +16,15 @@ import { getLayerColor } from '../data/sampleData';
 export default function GraphView({ graphData, config, onNodeSelect }) {
   const containerRef = useRef(null);
   const graphRef = useRef(null);
-  const layerAnchorRef = useRef(null);
+  const layerPlanesRef = useRef(null);
   const repulsionRef = useRef(null);
+  const configRef = useRef(config);
 
   // Initialize the graph
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const layerSpacing = 120;
     const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
@@ -30,20 +32,24 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       // nodeVal drives sphere volume via the built-in renderer (radius = nodeRelSize × ∛nodeVal).
       // Using weight² gives radius ∝ weight^(2/3) for a clear word-cloud size spread.
       .nodeRelSize(0.3)
-      .nodeVal((node) => Math.pow(node.weight || 10, 2))
+      .nodeVal((node) => {
+        const base = 100;
+        const w = node.weight || 10;
+        return base + w * w;
+      })
       .nodeColor((node) => node.color || '#3b82f6')
       .nodeOpacity(0.85)
       // Extend mode: add label sprite on top of the built-in sphere instead of replacing it
       .nodeThreeObjectExtend(true)
       .nodeThreeObject((node) => {
-        const showLabel = config.showLabels;
-        const showField = config.showForceField;
+        const cfg = configRef.current;
+        const showLabel = cfg.showLabels;
+        const showField = cfg.showForceField;
         if (!showLabel && !showField) return false;
 
         const group = new THREE.Group();
-        const approxRadius = 0.3 * Math.cbrt(Math.pow(node.weight || 10, 2));
+        const approxRadius = 0.3 * Math.cbrt(100 + Math.pow(node.weight || 10, 2));
 
-        // Label sprite
         if (showLabel) {
           const sprite = new SpriteText(node.label || node.id);
           sprite.color = '#e2e8f0';
@@ -56,18 +62,17 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
           group.add(sprite);
         }
 
-        // Force field sphere
         if (showField) {
-          const fieldRadius = config.repulsionMaxDistance;
-          const geometry = new THREE.SphereGeometry(fieldRadius, 24, 16);
+          const fieldRadius = cfg.repulsionMaxDistance;
+          const geometry = new THREE.CircleGeometry(fieldRadius, 48);
           const material = new THREE.MeshBasicMaterial({
             color: node.color || '#3b82f6',
             transparent: true,
             opacity: 0.05,
             depthWrite: false,
+            side: THREE.DoubleSide,
           });
-          const mesh = new THREE.Mesh(geometry, material);
-          group.add(mesh);
+          group.add(new THREE.Mesh(geometry, material));
         }
 
         return group;
@@ -97,53 +102,97 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
         );
       })
       .onNodeDrag((node) => {
-        // Lock node to its layer plane (Z-axis) during drag
+        // Allow free movement on X/Y but lock Z to layer
+        node.fx = undefined;
+        node.fy = undefined;
         if (node.layer !== undefined) {
-          const targetZ = node.layer * config.layerSpacing;
-          node.fz = targetZ;
+          const targetZ = node.layer * layerSpacing;
           node.z = targetZ;
-          if (node.__threeObj) {
-            node.__threeObj.position.z = targetZ;
-          }
+          node.fz = targetZ;
         }
       })
       .onNodeDragEnd((node) => {
+        // Re-pin the dragged node at its new position and update home
+        node._homeX = node.x;
+        node._homeY = node.y;
         node.fx = node.x;
         node.fy = node.y;
-        if (node.layer !== undefined) {
-          const targetZ = node.layer * config.layerSpacing;
-          node.fz = targetZ;
-        } else {
-          node.fz = node.z;
+        node.fz = node.layer !== undefined ? node.layer * layerSpacing : node.z;
+
+        // Spring-back animation: displaced same-layer nodes ease back to home
+        const sameLayer = graphData.nodes.filter(
+          n => n !== node && n.layer === node.layer
+        );
+        const duration = 300;
+        const start = performance.now();
+        // Capture current displaced positions
+        const snapshots = sameLayer.map(n => ({ node: n, startX: n.fx, startY: n.fy }));
+        function animate(now) {
+          const t = Math.min(1, (now - start) / duration);
+          const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+          for (const s of snapshots) {
+            s.node.fx = s.startX + (s.node._homeX - s.startX) * ease;
+            s.node.fy = s.startY + (s.node._homeY - s.startY) * ease;
+          }
+          if (t < 1) requestAnimationFrame(animate);
         }
+        requestAnimationFrame(animate);
       })
       .onBackgroundClick(() => {
         if (onNodeSelect) onNodeSelect(null);
       });
 
-    // --- Add custom forces ---
-    const layerAnchor = forceLayerAnchor(config.layerStrength, config.layerSpacing);
-    const repulsion = forceWithinLayerRepulsion(config.repulsionStrength, config.repulsionMaxDistance);
-
-    layerAnchorRef.current = layerAnchor;
-    repulsionRef.current = repulsion;
-
-    graph.d3Force('layerAnchor', layerAnchor);
-    graph.d3Force('withinLayerRepulsion', repulsion);
-
-    // Remove cross-layer forces so dragging only affects same-layer nodes
+    // Disable default d3 forces, add custom within-layer repulsion
     graph.d3Force('charge', null);
     graph.d3Force('link', null);
+    graph.d3Force('center', null);
 
-    graph.d3AlphaDecay(config.alphaDecay);
-    graph.d3VelocityDecay(config.velocityDecay);
+    const repulsion = forceWithinLayerRepulsion(config.repulsionStrength, config.repulsionMaxDistance);
+    graph.d3Force('withinLayerRepulsion', repulsion);
+    repulsionRef.current = repulsion;
 
-    // Set graph data
+    // Position nodes on their layer's Z plane and pin BEFORE setting graph data
+    // (prevents simulation ticks from running on unpinned nodes)
+    for (const node of graphData.nodes) {
+      if (node.layer !== undefined) {
+        node.z = node.layer * layerSpacing;
+        node.fz = node.z;
+      }
+      if (node.x === undefined) node.x = (Math.random() - 0.5) * 200;
+      if (node.y === undefined) node.y = (Math.random() - 0.5) * 200;
+      node._homeX = node.x;
+      node._homeY = node.y;
+      node.fx = node.x;
+      node.fy = node.y;
+    }
+
+    // Set graph data (simulation starts with already-pinned nodes)
     graph.graphData(graphData);
 
-    // Position camera for a horizontal front-on view of layer 0
+    // Add semi-transparent layer plane meshes
+    const layerPlanesGroup = new THREE.Group();
+    const uniqueLayers = [...new Set(graphData.nodes.map(n => n.layer))].sort((a, b) => a - b);
+    for (const layerIdx of uniqueLayers) {
+      const geometry = new THREE.BoxGeometry(400, 400, 2);
+      const material = new THREE.MeshBasicMaterial({
+        color: getLayerColor(layerIdx),
+        transparent: true,
+        opacity: 0.08,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.z = layerIdx * layerSpacing;
+      layerPlanesGroup.add(mesh);
+    }
+    layerPlanesGroup.visible = config.showLayerPlanes;
+    graph.scene().add(layerPlanesGroup);
+    layerPlanesRef.current = layerPlanesGroup;
+
+    // Position camera to see all layers
+    const midZ = ((uniqueLayers.length - 1) * layerSpacing) / 2;
     setTimeout(() => {
-      graph.cameraPosition({ x: 0, y: 80, z: 700 }, { x: 0, y: 0, z: 0 }, 0);
+      graph.cameraPosition({ x: 0, y: 80, z: midZ + 700 }, { x: 0, y: 0, z: midZ }, 0);
     }, 100);
 
     graphRef.current = graph;
@@ -156,29 +205,28 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
 
   // Update forces when config changes (without re-creating the graph)
   useEffect(() => {
+    configRef.current = config;
+
     const graph = graphRef.current;
     if (!graph) return;
 
-    // Update custom forces
-    if (layerAnchorRef.current) {
-      layerAnchorRef.current.strength(config.layerStrength);
-      layerAnchorRef.current.layerSpacing(config.layerSpacing);
-    }
+    // Update repulsion force parameters
     if (repulsionRef.current) {
       repulsionRef.current.strength(config.repulsionStrength);
       repulsionRef.current.maxDistance(config.repulsionMaxDistance);
     }
 
-    graph.d3AlphaDecay(config.alphaDecay);
-    graph.d3VelocityDecay(config.velocityDecay);
-
     // Update link visibility
     graph.linkVisibility(() => config.showLinks);
+
+    // Toggle layer plane visibility
+    if (layerPlanesRef.current) {
+      layerPlanesRef.current.visible = config.showLayerPlanes;
+    }
 
     // Refresh node Three.js objects when visual toggles change
     graph.nodeThreeObject(graph.nodeThreeObject());
 
-    // Reheat simulation so changes take effect
     graph.d3ReheatSimulation();
   }, [config]);
 

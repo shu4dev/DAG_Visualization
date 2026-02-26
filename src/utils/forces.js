@@ -1,96 +1,53 @@
 /**
- * Custom Force Functions for Layered DAG Layout
+ * Within-layer position-based repulsion for d3-force.
  *
- * These forces work with d3-force-3d (used internally by 3d-force-graph)
- * to implement the layered DAG physics described in the project spec:
- * 
- * 1. Layer anchoring: nodes are attracted to their layer plane along the Z axis
- * 2. Within-layer repulsion: nodes in the same layer repel each other (X/Y only)
- * 3. Spring edges: handled by default d3 link force (edges pull connected nodes)
- * 4. Damping: controlled via d3's alpha decay
- */
-
-/**
- * Force that anchors nodes to their assigned layer plane along the Z axis.
- * Each layer is positioned at z = layerIndex * layerSpacing.
+ * Apple Watch bubble UI pattern: when a node is dragged, nearby same-layer
+ * nodes are pushed away so force fields don't overlap. Displacement is
+ * applied directly via fx/fy (not velocity), so nodes slide smoothly.
+ * On release, GraphView animates displaced nodes back to their _homeX/_homeY.
  *
- * @param {number} strength - How strongly nodes are pulled to their layer plane (0-1)
- * @param {number} layerSpacing - Distance between layer planes in world units
+ * @param {number} strength - Unused (kept for API compat with config)
+ * @param {number} maxDistance - Scales the effective repulsion radius
  */
-export function forceLayerAnchor(strength = 0.5, layerSpacing = 100) {
+export function forceWithinLayerRepulsion(strength = -30, maxDistance = 150) {
   let nodes;
 
-  function force() {
+  function force(/* alpha */) {
+    // Find the actively-dragged node (unpinned: fx === undefined)
+    const dragged = nodes.find(n => n.fx === undefined && n.fy === undefined);
+    if (!dragged) return;
+
+    const dragLayer = dragged.layer;
+
     for (const node of nodes) {
-      if (node.layer === undefined) continue;
-      const targetZ = node.layer * layerSpacing;
-      // Hard-lock node to its layer plane on the Z axis
-      node.z = targetZ;
-      node.vz = 0;
-    }
-  }
+      if (node === dragged) continue;
+      if (node.layer !== dragLayer) continue;
+      if (node._homeX === undefined) continue;
 
-  force.initialize = function (_nodes) {
-    nodes = _nodes;
-    // Set initial Z positions to layer planes
-    for (const node of nodes) {
-      if (node.layer !== undefined) {
-        node.z = node.layer * layerSpacing;
+      const dx = node._homeX - dragged.x;
+      const dy = node._homeY - dragged.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+
+      // Minimum separation = sum of both nodes' effective radii
+      // nodeRelSize(0.3) × cbrt(100 + w²) gives visual radius;
+      // scale by maxDistance/50 to tie repulsion range to the config slider
+      const radiusA = 0.3 * Math.cbrt(100 + Math.pow(dragged.weight || 10, 2));
+      const radiusB = 0.3 * Math.cbrt(100 + Math.pow(node.weight || 10, 2));
+      const minSep = (radiusA + radiusB) * maxDistance / 50;
+
+      if (dist >= minSep) {
+        // No overlap — snap back to home
+        node.fx = node._homeX;
+        node.fy = node._homeY;
+        continue;
       }
-    }
-  };
 
-  // Allow updating strength at runtime (for slider controls)
-  force.strength = function (s) {
-    if (s === undefined) return strength;
-    strength = s;
-    return force;
-  };
-
-  force.layerSpacing = function (s) {
-    if (s === undefined) return layerSpacing;
-    layerSpacing = s;
-    return force;
-  };
-
-  return force;
-}
-
-/**
- * Force that provides extra repulsion between nodes in the SAME layer.
- * Only affects X and Y, leaving Z controlled by layer anchoring.
- *
- * @param {number} strength - Repulsion strength (negative = repel)
- * @param {number} maxDistance - Max distance at which repulsion applies
- */
-export function forceWithinLayerRepulsion(strength = -50, maxDistance = 150) {
-  let nodes;
-
-  function force(alpha) {
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i];
-        const b = nodes[j];
-
-        // Only apply within same layer
-        if (a.layer !== b.layer) continue;
-
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-
-        if (dist > maxDistance) continue;
-
-        // Coulomb-like repulsion: F = strength / dist^2
-        const forceMag = (strength * alpha) / (dist * dist);
-        const fx = (dx / dist) * forceMag;
-        const fy = (dy / dist) * forceMag;
-
-        a.vx -= fx;
-        a.vy -= fy;
-        b.vx += fx;
-        b.vy += fy;
-      }
+      // Push away: displace along the vector from dragged → node
+      const overlap = minSep - dist;
+      const pushX = (dx / dist) * overlap;
+      const pushY = (dy / dist) * overlap;
+      node.fx = node._homeX + pushX;
+      node.fy = node._homeY + pushY;
     }
   }
 
