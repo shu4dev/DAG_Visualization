@@ -20,12 +20,13 @@
 export function forceLayerAnchor(strength = 0.5, layerSpacing = 100) {
   let nodes;
 
-  function force(alpha) {
+  function force() {
     for (const node of nodes) {
       if (node.layer === undefined) continue;
       const targetZ = node.layer * layerSpacing;
-      // Pull node toward its layer plane on the Z axis
-      node.vz += (targetZ - node.z) * strength * alpha;
+      // Hard-lock node to its layer plane on the Z axis
+      node.z = targetZ;
+      node.vz = 0;
     }
   }
 

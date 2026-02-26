@@ -14,7 +14,6 @@ import { generateSampleData, parseGraphData, fetchGraphData } from './data/sampl
  */
 export default function App() {
   const [graphData, setGraphData] = useState(() => generateSampleData());
-  const [layers, setLayers] = useState(() => generateSampleData().layers);
   const [selectedNode, setSelectedNode] = useState(null);
   const [error, setError] = useState(null);
   const { config, updateConfig } = useForceConfig();
@@ -24,7 +23,7 @@ export default function App() {
     setError(null);
     const data = generateSampleData();
     setGraphData(data);
-    setLayers(data.layers);
+
     setSelectedNode(null);
   }, []);
 
@@ -34,7 +33,7 @@ export default function App() {
     try {
       const data = await fetchGraphData(url);
       setGraphData(data);
-      setLayers(data.layers || []);
+
       setSelectedNode(null);
     } catch (err) {
       setError(`Failed to fetch: ${err.message}`);
@@ -51,7 +50,7 @@ export default function App() {
         const json = JSON.parse(e.target.result);
         const data = parseGraphData(json);
         setGraphData(data);
-        setLayers(data.layers || []);
+  
         setSelectedNode(null);
       } catch (err) {
         setError(`Invalid JSON: ${err.message}`);
@@ -103,7 +102,6 @@ export default function App() {
       <ControlPanel
         config={config}
         updateConfig={updateConfig}
-        layers={layers}
         onLoadSample={handleLoadSample}
         onLoadFromAPI={handleLoadFromAPI}
         onFileUpload={handleFileUpload}
