@@ -6,6 +6,7 @@ import SpriteText from 'three-spritetext';
 import { forceWithinLayerRepulsion, forceCrossLayerSpring } from '../utils/forces';
 import { getLayerColor } from '../data/sampleData';
 import { createHologramNode } from './HologramNode';
+import FlyCamera from './Flycamera';
 
 /**
  * GraphView Component
@@ -24,6 +25,9 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
   const repulsionRef = useRef(null);
   const springRef = useRef(null);
   const configRef = useRef(config);
+
+  // Shared with FlyCamera — when true, click handlers are skipped
+  const flyActiveRef = useRef(false);
 
   // Initialize the graph
   useEffect(() => {
@@ -71,6 +75,8 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       })
       // --- Interaction ---
       .onNodeClick((node) => {
+        if (flyActiveRef.current) return; // fly mode owns clicks
+
         if (onNodeSelect) onNodeSelect(node);
 
         const distance = 200;
@@ -102,6 +108,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
         graph.d3ReheatSimulation();
       })
       .onBackgroundClick(() => {
+        if (flyActiveRef.current) return; // fly mode owns clicks
         if (onNodeSelect) onNodeSelect(null);
       });
 
@@ -315,5 +322,12 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      {/* Graph canvas mounts here */}
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      {/* HUD overlay sits above the canvas */}
+      <FlyCamera graphRef={graphRef} flyActiveRef={flyActiveRef} containerRef={containerRef} />
+    </div>
+  );
 }
