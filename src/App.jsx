@@ -3,7 +3,7 @@ import GraphView from './components/GraphView';
 import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
 import { useForceConfig } from './hooks/useForceConfig';
-import { generateSampleData, parseGraphData, fetchGraphData } from './data/sampleData';
+import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/sampleData';
 
 /**
  * App Component
@@ -20,9 +20,8 @@ export default function App() {
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
     setError(null);
-    const data = generateSampleData();
+  const data = generateSampleData();
     setGraphData(data);
-
     setSelectedNode(null);
   }, []);
 
@@ -46,9 +45,20 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const json = JSON.parse(e.target.result);
-        const data = parseGraphData(json);
-        setGraphData(data);
+        const text = e.target.result;
+        const json = JSON.parse(text);
+        const data = parseAnyGraphInput(json);
+
+        if (!data || !Array.isArray(data.nodes)) {
+          throw new Error("Invalid graph data format");
+            }
+
+            console.log("parsed data:", data);
+            setGraphData({
+              nodes: data.nodes || [],
+              links: data.links || [],
+              layers: data.layers || []
+            });
   
         setSelectedNode(null);
       } catch (err) {
@@ -64,6 +74,7 @@ export default function App() {
       {/* 3D Graph Viewport */}
       <div className="graph-container">
         <GraphView
+          key={`${graphData.nodes.length}-${graphData.links.length}`}  
           graphData={graphData}
           config={config}
           onNodeSelect={setSelectedNode}

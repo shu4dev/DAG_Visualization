@@ -8,14 +8,14 @@
 
 // Layer color palette
 export const LAYER_COLORS = [
-  '#3b82f6', // blue
-  '#06b6d4', // cyan
-  '#8b5cf6', // violet
-  '#f59e0b', // amber
-  '#10b981', // emerald
-  '#f43f5e', // rose
-  '#6366f1', // indigo
-  '#ec4899', // pink
+  '#3b82f6',
+  '#06b6d4',
+  '#8b5cf6',
+  '#f59e0b',
+  '#10b981',
+  '#f43f5e',
+  '#6366f1',
+  '#ec4899',
 ];
 
 export function getLayerColor(layerIndex) {
@@ -24,7 +24,6 @@ export function getLayerColor(layerIndex) {
 
 /**
  * Generate a sample time-sliced word frequency DAG.
- * 
  * @returns {{ nodes: Array, links: Array, layers: Array }}
  */
 export function generateSampleData() {
@@ -36,42 +35,31 @@ export function generateSampleData() {
     { label: 'May 2025', index: 4 },
   ];
 
-  // Words with their frequencies per time slice.
-  // Values are intentionally spread across a wide range to create a clear
-  // word-cloud effect: dominant words (100-170) vs niche words (5-30).
   const wordData = {
-    // Dominant throughout
-    'AI':           [120, 140, 158, 155, 170],
-    'data':         [110, 105, 108, 100,  95],
-    'model':        [ 90,  95, 108, 115, 120],
-
-    // Rising stars — small early, huge by May
-    'agent':        [  8,  22,  50,  95, 145],
-    'transformer':  [ 30,  52,  80, 108, 125],
-    'safety':       [ 12,  28,  58,  85, 110],
-    'reasoning':    [ 18,  32,  55,  80, 100],
-    'alignment':    [  8,  18,  32,  55,  80],
-
-    // Moderate & stable
-    'learning':     [ 70,  72,  68,  72,  70],
-    'training':     [ 60,  62,  65,  60,  58],
-    'neural':       [ 55,  58,  60,  58,  55],
-    'cloud':        [ 65,  60,  55,  50,  45],
-
-    // Small / niche
-    'network':      [ 40,  38,  35,  32,  30],
-    'inference':    [ 18,  25,  32,  42,  50],
-    'multimodal':   [ 10,  20,  38,  52,  65],
-    'GPU':          [ 28,  32,  35,  30,  28],
-    'deployment':   [ 22,  28,  30,  35,  38],
-    'attention':    [ 20,  30,  45,  50,  58],
-    'edge':         [  6,  10,  18,  28,  38],
-    'machine':      [ 48,  45,  40,  35,  30],
+    AI: [120, 140, 158, 155, 170],
+    data: [110, 105, 108, 100, 95],
+    model: [90, 95, 108, 115, 120],
+    agent: [8, 22, 50, 95, 145],
+    transformer: [30, 52, 80, 108, 125],
+    safety: [12, 28, 58, 85, 110],
+    reasoning: [18, 32, 55, 80, 100],
+    alignment: [8, 18, 32, 55, 80],
+    learning: [70, 72, 68, 72, 70],
+    training: [60, 62, 65, 60, 58],
+    neural: [55, 58, 60, 58, 55],
+    cloud: [65, 60, 55, 50, 45],
+    network: [40, 38, 35, 32, 30],
+    inference: [18, 25, 32, 42, 50],
+    multimodal: [10, 20, 38, 52, 65],
+    GPU: [28, 32, 35, 30, 28],
+    deployment: [22, 28, 30, 35, 38],
+    attention: [20, 30, 45, 50, 58],
+    edge: [6, 10, 18, 28, 38],
+    machine: [48, 45, 40, 35, 30],
   };
 
   const nodes = [];
 
-  // Create nodes for each word in each time slice
   for (const [word, frequencies] of Object.entries(wordData)) {
     for (let t = 0; t < timeSlices.length; t++) {
       const freq = frequencies[t];
@@ -83,12 +71,11 @@ export function generateSampleData() {
           layerLabel: timeSlices[t].label,
           weight: freq,
           color: getLayerColor(t),
-          // Metadata for inspection
           metadata: {
             word,
             timeSlice: timeSlices[t].label,
             frequency: freq,
-            trend: t > 0 ? (freq - frequencies[t - 1]) : 0,
+            trend: t > 0 ? freq - frequencies[t - 1] : 0,
           },
         });
       }
@@ -103,48 +90,137 @@ export function generateSampleData() {
 }
 
 /**
- * Parse user-provided JSON data into the graph format.
- * Expected format:
- * {
- *   "nodes": [{ "id": "...", "label": "...", "layer": 0, "weight": 50, ... }],
- *   "links": [{ "source": "node1", "target": "node2", "value": 10 }],
- *   "layers": [{ "label": "Layer 0", "index": 0 }, ...]
- * }
+ * Normalize graph-shaped data into renderer format.
  */
 export function parseGraphData(jsonData) {
-  const { nodes, links, layers } = jsonData;
+  const nodes = Array.isArray(jsonData?.nodes) ? jsonData.nodes : [];
+  const links = Array.isArray(jsonData?.links) ? jsonData.links : [];
+  const layers = Array.isArray(jsonData?.layers) ? jsonData.layers : [];
 
-  // Validate and assign colors if missing
   const processedNodes = nodes.map((node) => ({
     ...node,
     color: node.color || getLayerColor(node.layer || 0),
-    weight: node.weight || 1,
+    weight: node.weight ?? 1,
     label: node.label || node.id,
     metadata: node.metadata || {},
   }));
 
   const processedLinks = links.map((link) => ({
     ...link,
-    value: link.value || 1,
+    value: link.value ?? 1,
   }));
 
   return {
     nodes: processedNodes,
     links: processedLinks,
-    layers: layers || [],
+    layers,
   };
 }
 
 /**
- * Fetch graph data from an API endpoint.
- * @param {string} url - The API endpoint URL
- * @returns {Promise<{ nodes: Array, links: Array, layers: Array }>}
+ * Parse raw time-sliced word frequency data into graph format.
+ */
+export function parseRawWordFrequencyData(rawData) {
+  const timeSlices = Array.isArray(rawData?.timeSlices) ? rawData.timeSlices : [];
+
+  const layers = timeSlices.map((slice, index) => ({
+    label: slice.label || `Layer ${index}`,
+    index,
+  }));
+
+  const nodes = [];
+  const links = [];
+  const wordOccurrences = new Map();
+
+  timeSlices.forEach((slice, layerIndex) => {
+    const layerLabel = slice.label || `Layer ${layerIndex}`;
+    const words = Array.isArray(slice.words) ? slice.words : [];
+
+    words.forEach((entry) => {
+      const word = entry.word;
+      const frequency = entry.frequency ?? 1;
+
+      if (!word) return;
+
+      const nodeId = `${word}_${layerIndex}`;
+
+      nodes.push({
+        id: nodeId,
+        label: word,
+        layer: layerIndex,
+        layerLabel,
+        weight: frequency,
+        color: getLayerColor(layerIndex),
+        metadata: {
+          word,
+          timeSlice: layerLabel,
+          frequency,
+        },
+      });
+
+      if (!wordOccurrences.has(word)) {
+        wordOccurrences.set(word, []);
+      }
+
+      wordOccurrences.get(word).push({
+        id: nodeId,
+        layer: layerIndex,
+        frequency,
+      });
+    });
+  });
+
+  for (const [word, occurrences] of wordOccurrences.entries()) {
+    occurrences.sort((a, b) => a.layer - b.layer);
+
+    for (let i = 0; i < occurrences.length - 1; i++) {
+      const current = occurrences[i];
+      const next = occurrences[i + 1];
+
+      if (next.layer === current.layer + 1) {
+        links.push({
+          source: current.id,
+          target: next.id,
+          value: Math.min(current.frequency, next.frequency),
+          metadata: {
+            word,
+            type: 'temporal',
+          },
+        });
+      }
+    }
+  }
+
+  return parseGraphData({ nodes, links, layers });
+}
+
+/**
+ * Universal parser
+ */
+export function parseAnyGraphInput(jsonData) {
+  if (Array.isArray(jsonData?.nodes)) {
+    return parseGraphData(jsonData);
+  }
+
+  if (Array.isArray(jsonData?.timeSlices)) {
+    return parseRawWordFrequencyData(jsonData);
+  }
+
+  throw new Error(
+    'Unsupported JSON format. Expected either { nodes, links, layers } or { timeSlices }.'
+  );
+}
+
+/**
+ * Fetch graph data from API
  */
 export async function fetchGraphData(url) {
   const response = await fetch(url);
+
   if (!response.ok) {
     throw new Error(`API request failed: ${response.status} ${response.statusText}`);
   }
+
   const data = await response.json();
-  return parseGraphData(data);
+  return parseAnyGraphInput(data);
 }

@@ -47,7 +47,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     if (!containerRef.current) return;
 
     const layerSpacing = 200;
-    const graph = ForceGraph3D()(containerRef.current)
+    const graph = graphRef.current = ForceGraph3D()(containerRef.current)
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
       // --- Node rendering (fully custom hologram) ---
@@ -215,7 +215,10 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     }
 
     // Set graph data (simulation starts with already-pinned nodes)
-    graph.graphData(graphData);
+    graph.graphData({
+      nodes: graphData.nodes || [],
+      links: graphData.links || []
+    });
 
     // Add deformed layer plane meshes (Perspective Wall)
     const layerPlanesGroup = new THREE.Group();
