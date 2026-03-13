@@ -35,18 +35,19 @@ export function generateSampleData() {
     { label: 'May 2025', index: 4 },
   ];
 
+  // Words with their frequencies per time slice.
   const wordData = {
      // Dominant throughout
     AI: [120, 140, 158, 155, 170],
     data: [110, 105, 108, 100, 95],
     model: [90, 95, 108, 115, 120],
 
-    // Rising stars — small early, huge by May
-    agent: [8, 22, 50, 95, 145],
-    transformer: [30, 52, 80, 108, 125],
-    safety: [12, 28, 58, 85, 110],
-    reasoning: [18, 32, 55, 80, 100],
-    alignment: [8, 18, 32, 55, 80],
+    // Rising stars
+    'agent':        [  8,  22,  50,  95, 145],
+    'transformer':  [ 30,  52,  80, 108, 125],
+    'safety':       [ 12,  28,  58,  85, 110],
+    'reasoning':    [ 18,  32,  55,  80, 100],
+    'alignment':    [  8,  18,  32,  55,  80],
 
     // Moderate & stable
     learning: [70, 72, 68, 72, 70],
@@ -65,6 +66,7 @@ export function generateSampleData() {
   };
 
   const nodes = [];
+  const links = [];
 
   for (const [word, frequencies] of Object.entries(wordData)) {
     for (let t = 0; t < timeSlices.length; t++) {
@@ -86,11 +88,79 @@ export function generateSampleData() {
         });
       }
     }
+
+  }
+
+  // ── Randomized spring connections across ANY forward layers ──
+  // Connections can skip layers. Rest length scales with layer gap so
+  // distant links are more relaxed, producing visible long-range threads.
+  const BASE_REST_LENGTH = 15;
+
+  // Group node ids by layer
+  const idsByLayer = {};
+  for (const node of nodes) {
+    if (!idsByLayer[node.layer]) idsByLayer[node.layer] = [];
+    idsByLayer[node.layer].push(node.id);
+  }
+  const layerIndices = Object.keys(idsByLayer).map(Number).sort((a, b) => a - b);
+
+  // Fisher-Yates shuffle on a copy
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  for (let li = 0; li < layerIndices.length - 1; li++) {
+    const currIds = idsByLayer[layerIndices[li]];
+
+    // Collect ALL forward layers as potential targets
+    const forwardLayers = layerIndices.slice(li + 1);
+
+    for (const srcId of currIds) {
+      // 35% chance this node has zero forward connections (scattered outlier)
+      if (Math.random() < 0.35) continue;
+
+      // Pick 1–2 connections total, spread across any forward layer
+      const numConns = 1 + Math.floor(Math.random() * 2);
+
+      for (let c = 0; c < numConns; c++) {
+        // Pick a random forward layer (weighted toward closer layers)
+        // Use exponential decay: closer layers are more likely
+        const weights = forwardLayers.map((_, idx) => Math.exp(-0.7 * idx));
+        const totalWeight = weights.reduce((s, w) => s + w, 0);
+        let roll = Math.random() * totalWeight;
+        let chosenLayerIdx = 0;
+        for (let w = 0; w < weights.length; w++) {
+          roll -= weights[w];
+          if (roll <= 0) { chosenLayerIdx = w; break; }
+        }
+        const targetLayer = forwardLayers[chosenLayerIdx];
+        const targetIds = idsByLayer[targetLayer];
+
+        // Pick a random target node in that layer
+        const tgtId = shuffled(targetIds)[0];
+
+        // Layer gap determines rest length: farther layers → longer rest
+        const layerGap = targetLayer - layerIndices[li];
+
+        links.push({
+          source: srcId,
+          target: tgtId,
+          value: 0.3 + Math.random() * 0.7,
+          // Per-link rest length scales with layer distance
+          restLength: BASE_REST_LENGTH * layerGap,
+        });
+      }
+    }
   }
 
   return {
     nodes,
-    links: [],
+    links,
     layers: timeSlices,
   };
 }
@@ -111,7 +181,7 @@ export function parseGraphData(jsonData) {
     metadata: node.metadata || {},
   }));
 
-  const processedLinks = links.map((link) => ({
+  const processedLinks = (links || []).map((link) => ({
     ...link,
     value: link.value ?? 1,
   }));
