@@ -8,14 +8,14 @@
 
 // Layer color palette
 export const LAYER_COLORS = [
-  '#3b82f6',
-  '#06b6d4',
-  '#8b5cf6',
-  '#f59e0b',
-  '#10b981',
-  '#f43f5e',
-  '#6366f1',
-  '#ec4899',
+  '#3b82f6', // blue
+  '#06b6d4', // cyan
+  '#8b5cf6', // violet
+  '#f59e0b', // amber
+  '#10b981', // emerald
+  '#f43f5e', // rose
+  '#6366f1', // indigo
+  '#ec4899', // pink
 ];
 
 export function getLayerColor(layerIndex) {
@@ -36,18 +36,24 @@ export function generateSampleData() {
   ];
 
   const wordData = {
+     // Dominant throughout
     AI: [120, 140, 158, 155, 170],
     data: [110, 105, 108, 100, 95],
     model: [90, 95, 108, 115, 120],
+
+    // Rising stars — small early, huge by May
     agent: [8, 22, 50, 95, 145],
     transformer: [30, 52, 80, 108, 125],
     safety: [12, 28, 58, 85, 110],
     reasoning: [18, 32, 55, 80, 100],
     alignment: [8, 18, 32, 55, 80],
+
+    // Moderate & stable
     learning: [70, 72, 68, 72, 70],
     training: [60, 62, 65, 60, 58],
     neural: [55, 58, 60, 58, 55],
     cloud: [65, 60, 55, 50, 45],
+    // Small / niche
     network: [40, 38, 35, 32, 30],
     inference: [18, 25, 32, 42, 50],
     multimodal: [10, 20, 38, 52, 65],
