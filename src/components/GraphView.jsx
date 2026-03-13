@@ -30,9 +30,12 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     if (!containerRef.current) return;
 
     const layerSpacing = 200;
-    const graph = graphRef.current = ForceGraph3D()(containerRef.current)
+    const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
+      //graph.width(containerRef.current.clientWidth);
+      //graph.height(containerRef.current.clientHeight);
+
       // --- Node rendering (fully custom hologram) ---
       .nodeThreeObjectExtend(false)
       .nodeThreeObject((node) => {

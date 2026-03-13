@@ -74,7 +74,7 @@ export default function App() {
       {/* 3D Graph Viewport */}
       <div className="graph-container">
         <GraphView
-          key={`${graphData.nodes.length}-${graphData.links.length}`}  
+          //key={`${graphData.nodes.length}-${graphData.links.length}`}  
           graphData={graphData}
           config={config}
           onNodeSelect={setSelectedNode}
