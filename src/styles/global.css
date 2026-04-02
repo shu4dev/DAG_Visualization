@@ -384,3 +384,133 @@ select:hover {
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+/* ========================================
+   FlyCamera HUD sytles
+   ======================================== */
+
+.fly-hud {
+  position: absolute;
+  z-index: 10;
+  font-family: var(--font-mono);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── Mode badge (top-right) ── */
+
+.fly-badge-group {
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.fly-badge {
+  pointer-events: auto;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.fly-badge:hover {
+  border-color: var(--border-accent);
+  color: var(--text-secondary);
+}
+
+.fly-badge--active {
+  background: color-mix(in srgb, var(--accent-blue) 15%, transparent);
+  border-color: color-mix(in srgb, var(--accent-blue) 35%, transparent);
+  color: var(--accent-blue);
+}
+
+.fly-badge--active:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.fly-badge-hint {
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Controls legend (bottom-left) ── */
+
+.fly-controls {
+  bottom: 16px;
+  left: 16px;
+  background: color-mix(in srgb, var(--bg-primary) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-blue) 15%, transparent);
+  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 2;
+  backdrop-filter: blur(8px);
+}
+
+.fly-controls kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  text-align: center;
+  color: var(--accent-blue);
+  font-family: var(--font-mono);
+  font-size: inherit;
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+/* ── Pointer lock prompt (centered) ── */
+
+.fly-lock-prompt {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-blue) 25%, transparent);
+  border-radius: var(--radius-lg);
+  padding: 14px 28px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  letter-spacing: 1px;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ── Crosshair (centered) ── */
+
+.fly-crosshair {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.fly-crosshair-h,
+.fly-crosshair-v {
+  position: absolute;
+  background: color-mix(in srgb, var(--accent-blue) 35%, transparent);
+}
+
+.fly-crosshair-h {
+  width: 18px;
+  height: 1px;
+  top: 0;
+  left: -9px;
+}
+
+.fly-crosshair-v {
+  width: 1px;
+  height: 18px;
+  top: -9px;
+  left: 0;
+}
