@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import GraphView from './components/GraphView';
 import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
@@ -7,7 +7,7 @@ import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/s
 
 /**
  * App Component
- * 
+ *
  * Root of the 3D Layered DAG Visualization application.
  * Manages graph data state, force configuration, and data loading.
  */
@@ -15,6 +15,9 @@ export default function App() {
   const [graphData, setGraphData] = useState(() => generateSampleData());
   const [selectedNode, setSelectedNode] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedLayer, setSelectedLayer] = useState('all');
+  const [resetViewTrigger, setResetViewTrigger] = useState(0);
+
   const { config, updateConfig } = useForceConfig();
 
   // Load the built-in sample data
@@ -23,6 +26,7 @@ export default function App() {
   const data = generateSampleData();
     setGraphData(data);
     setSelectedNode(null);
+    setSelectedLayer('all');
   }, []);
 
   // Load data from an API endpoint
@@ -31,8 +35,8 @@ export default function App() {
     try {
       const data = await fetchGraphData(url);
       setGraphData(data);
-
       setSelectedNode(null);
+      setSelectedLayer('all');
     } catch (err) {
       setError(`Failed to fetch: ${err.message}`);
       console.error(err);
@@ -43,31 +47,36 @@ export default function App() {
   const handleFileUpload = useCallback((file) => {
     setError(null);
     const reader = new FileReader();
+
     reader.onload = (e) => {
       try {
-        const text = e.target.result;
-        const json = JSON.parse(text);
-        const data = parseAnyGraphInput(json);
-
-        if (!data || !Array.isArray(data.nodes)) {
-          throw new Error("Invalid graph data format");
-            }
-
-            console.log("parsed data:", data);
-            setGraphData({
-              nodes: data.nodes || [],
-              links: data.links || [],
-              layers: data.layers || []
-            });
-  
+        const json = JSON.parse(e.target.result);
+        const data = parseGraphData(json);
+        setGraphData(data);
         setSelectedNode(null);
+        setSelectedLayer('all');
       } catch (err) {
         setError(`Invalid JSON: ${err.message}`);
         console.error(err);
       }
     };
+
     reader.readAsText(file);
   }, []);
+
+  const handleResetView = useCallback(() => {
+    setResetViewTrigger((prev) => prev + 1);
+  }, []);
+
+  const availableLayers = useMemo(() => {
+    if (!graphData?.nodes) return [];
+
+    const values = graphData.nodes
+      .map((node) => node.layer)
+      .filter((layer) => layer !== undefined && layer !== null);
+
+    return [...new Set(values)].sort((a, b) => Number(a) - Number(b));
+  }, [graphData]);
 
   return (
     <div className="app-container">
@@ -112,6 +121,10 @@ export default function App() {
         onLoadSample={handleLoadSample}
         onLoadFromAPI={handleLoadFromAPI}
         onFileUpload={handleFileUpload}
+        onResetView={handleResetView}
+        selectedLayer={selectedLayer}
+        onSelectLayer={setSelectedLayer}
+        availableLayers={availableLayers}
       />
     </div>
   );

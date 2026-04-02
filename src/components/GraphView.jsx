@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
@@ -16,7 +16,14 @@ import { createHologramNode } from './HologramNode';
  *   2. Cross-layer springs     — pulls connected nodes toward x-y alignment
  * Z positions are locked to layer planes; only x-y are free.
  */
-export default function GraphView({ graphData, config, onNodeSelect }) {
+export default function GraphView({
+  graphData,
+  config,
+  onNodeSelect,
+  selectedNode,
+  selectedLayer = 'all',
+  resetViewTrigger,
+}) {
   const containerRef = useRef(null);
   const graphRef = useRef(null);
   const layerPlanesRef = useRef(null);
@@ -25,11 +32,43 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
   const springRef = useRef(null);
   const configRef = useRef(config);
 
+  const layerSpacing = 120;
+
+  const filteredGraphData = useMemo(() => {
+    if (!graphData?.nodes || !graphData?.links) {
+      return { nodes: [], links: [] };
+    }
+
+    if (selectedLayer === 'all') {
+      return graphData;
+    }
+
+    const filteredNodes = graphData.nodes.filter(
+      (node) => String(node.layer) === String(selectedLayer)
+    );
+
+    const visibleNodeIds = new Set(filteredNodes.map((node) => node.id));
+
+    const filteredLinks = graphData.links.filter((link) => {
+      const sourceId =
+        typeof link.source === 'object' ? link.source.id : link.source;
+      const targetId =
+        typeof link.target === 'object' ? link.target.id : link.target;
+
+      return visibleNodeIds.has(sourceId) && visibleNodeIds.has(targetId);
+    });
+
+    return {
+      nodes: filteredNodes,
+      links: filteredLinks,
+    };
+  }, [graphData, selectedLayer]);
+
   // Initialize the graph
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const layerSpacing = 200;
+    
     const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
@@ -40,8 +79,9 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       .nodeThreeObjectExtend(false)
       .nodeThreeObject((node) => {
         const cfg = configRef.current;
+        const isSelected = selectedNode && selectedNode.id === node.id;
         const group = createHologramNode(node);
-
+      
         const s = 0.5 + (node.weight || 10) / 50;
         const outerRadius = 8.5 * s;
 
@@ -51,8 +91,10 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
           sprite.textHeight = Math.max(2.5, outerRadius * 0.25);
           sprite.position.y = outerRadius + 3;
           sprite.fontFace = 'DM Sans, sans-serif';
-          sprite.backgroundColor = 'rgba(15, 23, 42, 0.7)';
-          sprite.padding = 1.5;
+          sprite.backgroundColor = isSelected
+            ? 'rgba(15, 23, 42, 0.9)'
+            : 'rgba(15, 23, 42, 0.7)';
+          sprite.padding = isSelected ? 2.5 : 1.5;
           sprite.borderRadius = 3;
           group.add(sprite);
         }
@@ -63,13 +105,25 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
           const material = new THREE.MeshBasicMaterial({
             color: node.color || '#3b82f6',
             transparent: true,
-            opacity: 0.05,
+            opacity: isSelected ? 0.1 : 0.05,
             depthWrite: false,
             side: THREE.DoubleSide,
           });
           group.add(new THREE.Mesh(geometry, material));
         }
-
+      
+        if (isSelected) {
+          const ringGeometry = new THREE.SphereGeometry(outerRadius * 1.35, 24, 24);
+          const ringMaterial = new THREE.MeshBasicMaterial({
+            color: '#ffffff',
+            transparent: true,
+            opacity: 0.18,
+            wireframe: true,
+          });
+          const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+          group.add(ring);
+        }
+      
         return group;
       })
       // --- Interaction ---
@@ -79,9 +133,13 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
         const distance = 200;
         const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
         graph.cameraPosition(
-          { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
-          node,
-          1000
+          {
+            x: node.x * distRatio,
+            y: node.y * distRatio + 30,
+            z: node.z * distRatio + 40,
+          },
+          { x: node.x, y: node.y, z: node.z },
+          900
         );
       })
       .onNodeDrag((node) => {
@@ -123,7 +181,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
 
     // ── Custom Force 2: Cross-layer springs ──
     const spring = forceCrossLayerSpring(
-      graphData.links,
+      filteredGraphData.links,
       config.springStrength,
       config.springRestLength
     );
@@ -135,13 +193,13 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
 
     // ── Build layer groupings ──
     const nodesByLayer = {};
-    for (const node of graphData.nodes) {
-      if (!nodesByLayer[node.layer]) nodesByLayer[node.layer] = [];
+    for (const node of filteredGraphData.nodes) {
+      if (!(node.layer in nodesByLayer)) nodesByLayer[node.layer] = [];
       nodesByLayer[node.layer].push(node);
     }
 
     // ── Position nodes: random x/y (FREE), z strictly locked to layer ──
-    for (const node of graphData.nodes) {
+    for (const node of filteredGraphData.nodes) {
       const exactZ = (node.layer !== undefined ? node.layer : 0) * layerSpacing;
 
       // Z is STRICTLY pinned to layer plane — no displacement
@@ -162,10 +220,10 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     // graph yet (which would mutate link.source/target to objects), so we
     // resolve manually from our own node array.
     const nodeById = new Map();
-    for (const node of graphData.nodes) nodeById.set(node.id, node);
+    for (const node of filteredGraphData.nodes) nodeById.set(node.id, node);
 
     const linkPairs = []; // flat array: [srcNode, tgtNode, srcNode, tgtNode, …]
-    for (const link of graphData.links) {
+    for (const link of filteredGraphData.links) {
       const src = typeof link.source === 'object' ? link.source : nodeById.get(link.source);
       const tgt = typeof link.target === 'object' ? link.target : nodeById.get(link.target);
       if (src && tgt) {
@@ -183,7 +241,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
     // ── Add flat layer plane meshes ──
     const layerPlanesGroup = new THREE.Group();
     const layerMeta = [];
-    const uniqueLayers = [...new Set(graphData.nodes.map(n => n.layer))].sort((a, b) => a - b);
+    const uniqueLayers = [...new Set(filteredGraphData.nodes.map((n) => n.layer))].sort((a, b) => a - b);
     for (const layerIdx of uniqueLayers) {
       const geometry = new THREE.PlaneGeometry(400, 400);
       const material = new THREE.MeshBasicMaterial({
@@ -199,6 +257,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       layerPlanesGroup.add(mesh);
       layerMeta.push({ geometry, nodes: nodesByLayer[layerIdx] || [] });
     }
+
     layerPlanesGroup.visible = config.showLayerPlanes;
     graph.scene().add(layerPlanesGroup);
     layerPlanesRef.current = { group: layerPlanesGroup, layers: layerMeta };
@@ -233,7 +292,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       // HARD Z-LOCK: force every node back to its exact layer z every tick.
       // This is belt-and-suspenders on top of fz — it catches any floating
       // point drift or vz leakage from the d3-force integration step.
-      for (const node of graphData.nodes) {
+      for (const node of filteredGraphData.nodes) {
         if (node._layerZ !== undefined) {
           node.z = node._layerZ;
           node.vz = 0;
@@ -260,7 +319,6 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
 
     graphRef.current = graph;
 
-    // Cleanup
     return () => {
       if (linksRef.current) {
         linksRef.current.lineGeometry.dispose();
@@ -269,8 +327,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       }
       graph._destructor && graph._destructor();
     };
-  }, [graphData]); // Re-initialize when data changes
-
+  }, [filteredGraphData, onNodeSelect]);
   // ── Update forces when config changes (without re-creating the graph) ──
   useEffect(() => {
     configRef.current = config;
@@ -298,16 +355,35 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
       linksRef.current.lineSegments.visible = config.showLinks;
     }
 
-    // Toggle layer plane visibility
     if (layerPlanesRef.current) {
       layerPlanesRef.current.group.visible = config.showLayerPlanes;
     }
 
-    // Refresh node Three.js objects when visual toggles change
     graph.nodeThreeObject(graph.nodeThreeObject());
-
     graph.d3ReheatSimulation();
   }, [config]);
+
+  // Reset view button behavior
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
+
+    const nodes = filteredGraphData.nodes || [];
+    const layers = [
+      ...new Set(
+        nodes
+          .map((node) => node.layer)
+          .filter((layer) => layer !== undefined && layer !== null)
+      ),
+    ].sort((a, b) => a - b);
+
+    const midZ =
+      layers.length > 0
+        ? ((layers[0] + layers[layers.length - 1]) * layerSpacing) / 2
+        : 0;
+
+    graph.cameraPosition({ x: 0, y: 80, z: midZ + 700 }, { x: 0, y: 0, z: midZ }, 800);
+  }, [resetViewTrigger, filteredGraphData]);
 
   // Handle window resize
   useEffect(() => {
@@ -317,6 +393,7 @@ export default function GraphView({ graphData, config, onNodeSelect }) {
         graphRef.current.height(containerRef.current.clientHeight);
       }
     };
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
