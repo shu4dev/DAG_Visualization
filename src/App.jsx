@@ -3,7 +3,7 @@ import GraphView from './components/GraphView';
 import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
 import { useForceConfig } from './hooks/useForceConfig';
-import { generateSampleData, parseGraphData, fetchGraphData } from './data/sampleData';
+import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/sampleData';
 
 /**
  * App Component
@@ -23,7 +23,7 @@ export default function App() {
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
     setError(null);
-    const data = generateSampleData();
+  const data = generateSampleData();
     setGraphData(data);
     setSelectedNode(null);
     setSelectedLayer('all');
@@ -82,14 +82,12 @@ export default function App() {
     <div className="app-container">
       {/* 3D Graph Viewport */}
       <div className="graph-container">
-      <GraphView
-        graphData={graphData}
-        config={config}
-        onNodeSelect={setSelectedNode}
-        selectedNode={selectedNode}
-        selectedLayer={selectedLayer}
-        resetViewTrigger={resetViewTrigger}
-      />
+        <GraphView
+          //key={`${graphData.nodes.length}-${graphData.links.length}`}  
+          graphData={graphData}
+          config={config}
+          onNodeSelect={setSelectedNode}
+        />
 
         {/* Selected node info overlay */}
         <NodeInfo node={selectedNode} />

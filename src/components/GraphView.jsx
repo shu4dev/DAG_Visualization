@@ -72,6 +72,9 @@ export default function GraphView({
     const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
+      //graph.width(containerRef.current.clientWidth);
+      //graph.height(containerRef.current.clientHeight);
+
       // --- Node rendering (fully custom hologram) ---
       .nodeThreeObjectExtend(false)
       .nodeThreeObject((node) => {
@@ -229,8 +232,11 @@ export default function GraphView({
     }
     const totalSegments = linkPairs.length / 2;
 
-    // ── Feed data to the graph (simulation begins) ──
-    graph.graphData(filteredGraphData);
+    // Set graph data (simulation starts with already-pinned nodes)
+    graph.graphData({
+      nodes: graphData.nodes || [],
+      links: graphData.links || []
+    });
 
     // ── Add flat layer plane meshes ──
     const layerPlanesGroup = new THREE.Group();
