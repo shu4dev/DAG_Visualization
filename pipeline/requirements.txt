@@ -1,0 +1,5 @@
+# Dependencies for scripts/fetch_arxiv.py
+arxiv>=2.1.0
+keybert>=0.8.0
+torch>=2.0.0
+sentence-transformers>=2.2.0

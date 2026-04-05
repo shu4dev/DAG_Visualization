@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "3D Layered DAG Input",
+  "description": "Data contract between the Python extraction pipeline and the JavaScript visualization. The tool's parseAnyGraphInput auto-detects which format is provided.",
+  "oneOf": [
+    {
+      "title": "Time-Sliced Format",
+      "description": "Raw word frequencies grouped by time period. The visualization generates nodes and temporal links automatically.",
+      "type": "object",
+      "required": ["timeSlices"],
+      "properties": {
+        "timeSlices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "words"],
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "Human-readable period label, e.g. '2025-01' or 'Q1 2025'"
+              },
+              "words": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["word", "frequency"],
+                  "properties": {
+                    "word": {
+                      "type": "string",
+                      "description": "Keyword or keyphrase"
+                    },
+                    "frequency": {
+                      "type": "number",
+                      "minimum": 1,
+                      "description": "Weight determining node size (1-100 recommended)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Graph Format",
+      "description": "Pre-built graph with explicit nodes, links, and layer definitions.",
+      "type": "object",
+      "required": ["nodes"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "layer"],
+            "properties": {
+              "id":       { "type": "string" },
+              "label":    { "type": "string" },
+              "layer":    { "type": "integer", "description": "Layer/time index" },
+              "weight":   { "type": "number", "default": 1 },
+              "color":    { "type": "string", "description": "Hex color, auto-assigned if omitted" },
+              "metadata": { "type": "object" }
+            }
+          }
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "target"],
+            "properties": {
+              "source":     { "type": "string" },
+              "target":     { "type": "string" },
+              "value":      { "type": "number", "default": 1 },
+              "restLength": { "type": "number" }
+            }
+          }
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "index": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
