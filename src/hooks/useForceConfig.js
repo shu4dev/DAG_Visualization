@@ -23,8 +23,7 @@ export function useForceConfig() {
 
     // Visual toggles
     showLabels: true,
-    showLinks: false,
-    showLayerPlanes: true,
+    showLinks: true,
     showForceField: false,
   });
 

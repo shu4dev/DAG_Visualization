@@ -13,9 +13,6 @@ export default function ControlPanel({
   onLoadFromAPI,
   onFileUpload,
   onResetView,
-  availableLayers = [],
-  selectedLayer = 'all',
-  onSelectLayer,
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -91,24 +88,6 @@ export default function ControlPanel({
               </button>
             </div>
 
-            <div className="control-group">
-              <label htmlFor="layer-select">View Layer</label>
-              <select
-                id="layer-select"
-                className="layer-select"
-                value={selectedLayer}
-                onChange={(e) => {
-                  if (onSelectLayer) onSelectLayer(e.target.value);
-                }}
-              >
-                <option value="all">All Layers</option>
-                {availableLayers.map((layer) => (
-                  <option key={layer} value={layer}>
-                    {typeof layer === 'number' ? `Layer ${layer}` : layer}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* Visual Settings */}
@@ -122,16 +101,6 @@ export default function ControlPanel({
                   onChange={(e) => updateConfig('showLinks', e.target.checked)}
                 />
                 <span>Show Links</span>
-              </label>
-            </div>
-            <div className="toggle-control">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={config.showLayerPlanes}
-                  onChange={(e) => updateConfig('showLayerPlanes', e.target.checked)}
-                />
-                <span>Show Layers</span>
               </label>
             </div>
           </div>

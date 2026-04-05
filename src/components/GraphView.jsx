@@ -2,9 +2,11 @@ import { useEffect, useRef, useMemo } from 'react';
 import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
+import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
 import { forceWithinLayerRepulsion, forceCrossLayerSpring } from '../utils/forces';
-import { getLayerColor } from '../data/sampleData';
 import { createHologramNode } from './HologramNode';
 import FlyCamera from './Flycamera';
 
@@ -22,12 +24,10 @@ export default function GraphView({
   config,
   onNodeSelect,
   selectedNode,
-  selectedLayer = 'all',
   resetViewTrigger,
 }) {
   const containerRef = useRef(null);
   const graphRef = useRef(null);
-  const layerPlanesRef = useRef(null);
   const linksRef = useRef(null);
   const repulsionRef = useRef(null);
   const springRef = useRef(null);
@@ -41,31 +41,8 @@ export default function GraphView({
     if (!graphData?.nodes || !graphData?.links) {
       return { nodes: [], links: [] };
     }
-
-    if (selectedLayer === 'all') {
-      return graphData;
-    }
-
-    const filteredNodes = graphData.nodes.filter(
-      (node) => String(node.layer) === String(selectedLayer)
-    );
-
-    const visibleNodeIds = new Set(filteredNodes.map((node) => node.id));
-
-    const filteredLinks = graphData.links.filter((link) => {
-      const sourceId =
-        typeof link.source === 'object' ? link.source.id : link.source;
-      const targetId =
-        typeof link.target === 'object' ? link.target.id : link.target;
-
-      return visibleNodeIds.has(sourceId) && visibleNodeIds.has(targetId);
-    });
-
-    return {
-      nodes: filteredNodes,
-      links: filteredLinks,
-    };
-  }, [graphData, selectedLayer]);
+    return graphData;
+  }, [graphData]);
 
   // Initialize the graph
   useEffect(() => {
@@ -197,13 +174,6 @@ export default function GraphView({
     // ── Set simulation damping (velocityDecay) ──
     graph.d3VelocityDecay(config.damping);
 
-    // ── Build layer groupings ──
-    const nodesByLayer = {};
-    for (const node of filteredGraphData.nodes) {
-      if (!(node.layer in nodesByLayer)) nodesByLayer[node.layer] = [];
-      nodesByLayer[node.layer].push(node);
-    }
-
     // ── Position nodes: random x/y (FREE), z strictly locked to layer ──
     for (const node of filteredGraphData.nodes) {
       const exactZ = (node.layer !== undefined ? node.layer : 0) * layerSpacing;
@@ -244,54 +214,39 @@ export default function GraphView({
       links: graphData.links || []
     });
 
-    // ── Add flat layer plane meshes ──
-    const layerPlanesGroup = new THREE.Group();
-    const layerMeta = [];
     const uniqueLayers = [...new Set(filteredGraphData.nodes.map((n) => n.layer))].sort((a, b) => a - b);
-    for (const layerIdx of uniqueLayers) {
-      const geometry = new THREE.PlaneGeometry(400, 400);
-      const material = new THREE.MeshBasicMaterial({
-        color: getLayerColor(layerIdx),
-        transparent: true,
-        opacity: 0.08,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-      });
 
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.z = layerIdx * layerSpacing;
-      layerPlanesGroup.add(mesh);
-      layerMeta.push({ geometry, nodes: nodesByLayer[layerIdx] || [] });
+    // ── Build fat LineSegments2 for actual spring links ──
+    const posArray = new Float32Array(totalSegments * 6); // 2 vertices × 3 components
+    for (let s = 0; s < totalSegments; s++) {
+      const src = linkPairs[s * 2];
+      const tgt = linkPairs[s * 2 + 1];
+      posArray[s * 6]     = src.x; posArray[s * 6 + 1] = src.y; posArray[s * 6 + 2] = src.z;
+      posArray[s * 6 + 3] = tgt.x; posArray[s * 6 + 4] = tgt.y; posArray[s * 6 + 5] = tgt.z;
     }
 
-    layerPlanesGroup.visible = config.showLayerPlanes;
-    graph.scene().add(layerPlanesGroup);
-    layerPlanesRef.current = { group: layerPlanesGroup, layers: layerMeta };
+    const lineGeometry = new LineSegmentsGeometry();
+    lineGeometry.setPositions(posArray);
 
-    // ── Build THREE.LineSegments for actual spring links ──
-    const positions = new Float32Array(totalSegments * 6); // 2 vertices × 3 components
-    const lineGeometry = new THREE.BufferGeometry();
-    lineGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const renderer = graph.renderer();
+    const size = new THREE.Vector2();
+    renderer.getSize(size);
 
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: '#94a3b8',
+    const lineMaterial = new LineMaterial({
+      color: 0x60a5fa,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.5,
+      linewidth: 3,
       depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      resolution: size,
     });
 
-    const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
-
-    const posAttr = lineGeometry.getAttribute('position');
-    for (let i = 0; i < linkPairs.length; i++) {
-      const n = linkPairs[i];
-      posAttr.setXYZ(i, n.x, n.y, n.z);
-    }
-    posAttr.needsUpdate = true;
+    const lineSegments = new LineSegments2(lineGeometry, lineMaterial);
 
     lineSegments.visible = config.showLinks;
     graph.scene().add(lineSegments);
-    linksRef.current = { lineSegments, lineGeometry, lineMaterial, linkPairs };
+    linksRef.current = { lineSegments, lineGeometry, lineMaterial, linkPairs, posArray };
 
     // ── Update visuals each tick ──
     graph.onEngineTick(() => {
@@ -307,13 +262,15 @@ export default function GraphView({
 
       // Update link line positions
       if (linksRef.current) {
-        const attr = linksRef.current.lineGeometry.getAttribute('position');
-        const pairs = linksRef.current.linkPairs;
-        for (let i = 0; i < pairs.length; i++) {
-          const n = pairs[i];
-          attr.setXYZ(i, n.x, n.y, n.z);
+        const { linkPairs: pairs, posArray: pos } = linksRef.current;
+        const segs = pairs.length / 2;
+        for (let s = 0; s < segs; s++) {
+          const src = pairs[s * 2];
+          const tgt = pairs[s * 2 + 1];
+          pos[s * 6]     = src.x; pos[s * 6 + 1] = src.y; pos[s * 6 + 2] = src.z;
+          pos[s * 6 + 3] = tgt.x; pos[s * 6 + 4] = tgt.y; pos[s * 6 + 5] = tgt.z;
         }
-        attr.needsUpdate = true;
+        linksRef.current.lineGeometry.setPositions(pos);
       }
     });
 
@@ -334,7 +291,14 @@ export default function GraphView({
       graph._destructor && graph._destructor();
     };
   }, [filteredGraphData, onNodeSelect]);
-  // ── Update forces when config changes (without re-creating the graph) ──
+  // ── Update visual toggles (no physics impact) ──
+  useEffect(() => {
+    if (linksRef.current) {
+      linksRef.current.lineSegments.visible = config.showLinks;
+    }
+  }, [config.showLinks]);
+
+  // ── Update forces when physics config changes ──
   useEffect(() => {
     configRef.current = config;
 
@@ -356,18 +320,9 @@ export default function GraphView({
     // Update simulation damping
     graph.d3VelocityDecay(config.damping);
 
-    // Toggle link visibility
-    if (linksRef.current) {
-      linksRef.current.lineSegments.visible = config.showLinks;
-    }
-
-    if (layerPlanesRef.current) {
-      layerPlanesRef.current.group.visible = config.showLayerPlanes;
-    }
-
     graph.nodeThreeObject(graph.nodeThreeObject());
     graph.d3ReheatSimulation();
-  }, [config]);
+  }, [config.repulsionStrength, config.repulsionMaxDistance, config.springStrength, config.springRestLength, config.damping]);
 
   // Reset view button behavior
   useEffect(() => {
@@ -397,6 +352,12 @@ export default function GraphView({
       if (graphRef.current && containerRef.current) {
         graphRef.current.width(containerRef.current.clientWidth);
         graphRef.current.height(containerRef.current.clientHeight);
+        if (linksRef.current?.lineMaterial) {
+          const renderer = graphRef.current.renderer();
+          const sz = new THREE.Vector2();
+          renderer.getSize(sz);
+          linksRef.current.lineMaterial.resolution.set(sz.x, sz.y);
+        }
       }
     };
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import GraphView from './components/GraphView';
 import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
@@ -15,7 +15,6 @@ export default function App() {
   const [graphData, setGraphData] = useState(() => generateSampleData());
   const [selectedNode, setSelectedNode] = useState(null);
   const [error, setError] = useState(null);
-  const [selectedLayer, setSelectedLayer] = useState('all');
   const [resetViewTrigger, setResetViewTrigger] = useState(0);
 
   const { config, updateConfig } = useForceConfig();
@@ -26,7 +25,6 @@ export default function App() {
   const data = generateSampleData();
     setGraphData(data);
     setSelectedNode(null);
-    setSelectedLayer('all');
   }, []);
 
   // Load data from an API endpoint
@@ -36,7 +34,6 @@ export default function App() {
       const data = await fetchGraphData(url);
       setGraphData(data);
       setSelectedNode(null);
-      setSelectedLayer('all');
     } catch (err) {
       setError(`Failed to fetch: ${err.message}`);
       console.error(err);
@@ -54,7 +51,6 @@ export default function App() {
         const data = parseGraphData(json);
         setGraphData(data);
         setSelectedNode(null);
-        setSelectedLayer('all');
       } catch (err) {
         setError(`Invalid JSON: ${err.message}`);
         console.error(err);
@@ -68,25 +64,17 @@ export default function App() {
     setResetViewTrigger((prev) => prev + 1);
   }, []);
 
-  const availableLayers = useMemo(() => {
-    if (!graphData?.nodes) return [];
-
-    const values = graphData.nodes
-      .map((node) => node.layer)
-      .filter((layer) => layer !== undefined && layer !== null);
-
-    return [...new Set(values)].sort((a, b) => Number(a) - Number(b));
-  }, [graphData]);
 
   return (
     <div className="app-container">
       {/* 3D Graph Viewport */}
       <div className="graph-container">
         <GraphView
-          //key={`${graphData.nodes.length}-${graphData.links.length}`}  
           graphData={graphData}
           config={config}
           onNodeSelect={setSelectedNode}
+          selectedNode={selectedNode}
+          resetViewTrigger={resetViewTrigger}
         />
 
         {/* Selected node info overlay */}
@@ -122,9 +110,6 @@ export default function App() {
         onLoadFromAPI={handleLoadFromAPI}
         onFileUpload={handleFileUpload}
         onResetView={handleResetView}
-        selectedLayer={selectedLayer}
-        onSelectLayer={setSelectedLayer}
-        availableLayers={availableLayers}
       />
     </div>
   );
