@@ -49,6 +49,7 @@ export default function ControlPanel({
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file && onFileUpload) onFileUpload(file);
+                    e.target.value = '';
                   }}
                 />
               </label>
