@@ -22,39 +22,118 @@ export default function App() {
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
     setError(null);
-  const data = generateSampleData();
+    const data = generateSampleData();
     setGraphData(data);
     setSelectedNode(null);
   }, []);
 
   // Load data from an API endpoint
   const handleLoadFromAPI = useCallback(async (url) => {
-    setError(null);
+    setError(null)
     try {
-      const data = await fetchGraphData(url);
-      setGraphData(data);
-      setSelectedNode(null);
+      const data = await fetchGraphData(url)
+      if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.links)) {
+        throw new Error('Invalid graph format: missing nodes or links')
+      }
+
+      if (data.nodes.length === 0) {
+        throw new Error('Invalid graph format: nodes cannot be empty')
+      }
+      setGraphData(data)
+      setSelectedNode(null)
     } catch (err) {
-      setError(`Failed to fetch: ${err.message}`);
-      console.error(err);
+      setError(`Failed to fetch: ${err.message}`)
+      console.error(err)
     }
-  }, []);
+  }, [])
 
   // Load data from an uploaded JSON file
   const handleFileUpload = useCallback((file) => {
     setError(null);
+
+    if (!file) {
+      setError('No file selected');
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = (e) => {
       try {
-        const json = JSON.parse(e.target.result);
-        const data = parseGraphData(json);
+        const text = e.target?.result;
+
+        if (typeof text !== 'string') {
+          throw new Error('Failed to read file');
+        }
+
+        const json = JSON.parse(text);
+
+        const hasGraphFormat =
+          json &&
+          Array.isArray(json.nodes) &&
+          Array.isArray(json.links);
+
+        const hasTimeSlicedFormat =
+          json &&
+          Array.isArray(json.timeSlices);
+
+        if (!hasGraphFormat && !hasTimeSlicedFormat) {
+          throw new Error(
+            'Unsupported JSON format. Expected either graph format or time-sliced format.'
+          );
+        }
+
+        const data = parseAnyGraphInput(json);
+
+        if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.links)) {
+          throw new Error('Failed to parse graph data');
+        }
+
+        if (data.nodes.length === 0) {
+          throw new Error('Invalid graph format: nodes cannot be empty');
+        }
+
+        const nodeIds = new Set();
+        for (const node of data.nodes) {
+          if (nodeIds.has(node.id)) {
+            throw new Error(`Duplicate node id: ${node.id}`);
+          }
+          nodeIds.add(node.id);
+        }
+
+        const nodeMap = new Map(data.nodes.map((n) => [n.id, n]));
+
+        for (const link of data.links) {
+          const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+          const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+
+          if (!sourceId || !targetId) {
+            throw new Error('Invalid links: missing source or target');
+          }
+
+          if (!nodeMap.has(sourceId) || !nodeMap.has(targetId)) {
+            throw new Error('Invalid link: source or target node does not exist');
+          }
+
+          const sourceNode = nodeMap.get(sourceId);
+          const targetNode = nodeMap.get(targetId);
+
+          if (sourceNode.layer > targetNode.layer) {
+            throw new Error('Invalid edge: backward-pointing edges are not allowed');
+          }
+        }
+
         setGraphData(data);
         setSelectedNode(null);
+        setError(null);
       } catch (err) {
-        setError(`Invalid JSON: ${err.message}`);
+        setError(err.message);
         console.error(err);
       }
+    };
+
+    reader.onerror = () => {
+      setError('Failed to read file');
     };
 
     reader.readAsText(file);
