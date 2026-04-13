@@ -74,6 +74,106 @@ export default function ControlPanel({
             </div>
           </div>
 
+          {/* Force Parameters */}
+          <div className="panel-section">
+            <h2>Force Settings</h2>
+
+            <div className="slider-control">
+              <div className="slider-label">
+                <span>Repulsion Strength</span>
+                <span className="value">{config.repulsionStrength}</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={500}
+                step={1}
+                value={config.repulsionStrength}
+                onChange={(e) => updateConfig('repulsionStrength', Number(e.target.value))}
+              />
+            </div>
+
+            <div className="slider-control">
+              <div className="slider-label">
+                <span>Repulsion Range</span>
+                <span className="value">{config.repulsionMaxDistance}</span>
+              </div>
+              <input
+                type="range"
+                min={50}
+                max={1500}
+                step={10}
+                value={config.repulsionMaxDistance}
+                onChange={(e) => updateConfig('repulsionMaxDistance', Number(e.target.value))}
+              />
+            </div>
+
+            <div className="slider-control">
+              <div className="slider-label">
+                <span>Spring Strength</span>
+                <span className="value">{config.springStrength.toFixed(2)}</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={0.5}
+                step={0.01}
+                value={config.springStrength}
+                onChange={(e) => updateConfig('springStrength', Number(e.target.value))}
+              />
+            </div>
+
+            <div className="slider-control">
+              <div className="slider-label">
+                <span>Spring Rest Length</span>
+                <span className="value">{config.springRestLength}</span>
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={100}
+                step={1}
+                value={config.springRestLength}
+                onChange={(e) => updateConfig('springRestLength', Number(e.target.value))}
+              />
+            </div>
+
+            <div className="slider-control">
+              <div className="slider-label">
+                <span>Damping</span>
+                <span className="value">{config.damping.toFixed(2)}</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.01}
+                value={config.damping}
+                onChange={(e) => updateConfig('damping', Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          {/* Layout */}
+          <div className="panel-section">
+            <h2>Layout</h2>
+
+            <div className="slider-control">
+              <div className="slider-label">
+                <span>Layer Spacing</span>
+                <span className="value">{config.layerSpacing}</span>
+              </div>
+              <input
+                type="range"
+                min={20}
+                max={400}
+                step={5}
+                value={config.layerSpacing}
+                onChange={(e) => updateConfig('layerSpacing', Number(e.target.value))}
+              />
+            </div>
+          </div>
+
           {/* View Controls */}
           <div className="panel-section">
             <h2>View Controls</h2>
@@ -91,20 +191,6 @@ export default function ControlPanel({
 
           </div>
 
-          {/* Visual Settings */}
-          <div className="panel-section">
-            <h2>Visual</h2>
-            <div className="toggle-control">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={config.showLinks}
-                  onChange={(e) => updateConfig('showLinks', e.target.checked)}
-                />
-                <span>Show Links</span>
-              </label>
-            </div>
-          </div>
         </>
       )}
     </div>

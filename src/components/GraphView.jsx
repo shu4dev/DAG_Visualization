@@ -35,7 +35,7 @@ export default function GraphView({
 
   // Shared with FlyCamera — when true, click handlers are skipped
   const flyActiveRef = useRef(false);
-  const layerSpacing = 120;
+  const layerSpacing = config.layerSpacing;
 
   const filteredGraphData = useMemo(() => {
     if (!graphData?.nodes || !graphData?.links) {
@@ -65,7 +65,7 @@ export default function GraphView({
         const s = 0.5 + (node.weight || 10) / 50;
         const outerRadius = 8.5 * s;
 
-        if (cfg.showLabels) {
+        {
           const sprite = new SpriteText(node.label || node.id);
           sprite.color = '#e2e8f0';
           sprite.textHeight = Math.max(2.5, outerRadius * 0.25);
@@ -79,18 +79,6 @@ export default function GraphView({
           group.add(sprite);
         }
 
-        if (cfg.showForceField) {
-          const fieldRadius = cfg.repulsionMaxDistance;
-          const geometry = new THREE.CircleGeometry(fieldRadius, 48);
-          const material = new THREE.MeshBasicMaterial({
-            color: node.color || '#3b82f6',
-            transparent: true,
-            opacity: isSelected ? 0.1 : 0.05,
-            depthWrite: false,
-            side: THREE.DoubleSide,
-          });
-          group.add(new THREE.Mesh(geometry, material));
-        }
       
         if (isSelected) {
           const ringGeometry = new THREE.SphereGeometry(outerRadius * 1.35, 24, 24);
@@ -175,8 +163,10 @@ export default function GraphView({
     graph.d3VelocityDecay(config.damping);
 
     // ── Position nodes: random x/y (FREE), z strictly locked to layer ──
+    const layers = filteredGraphData.nodes.map((n) => n.layer !== undefined ? n.layer : 0);
+    const midLayer = (Math.min(...layers) + Math.max(...layers)) / 2;
     for (const node of filteredGraphData.nodes) {
-      const exactZ = (node.layer !== undefined ? node.layer : 0) * layerSpacing;
+      const exactZ = ((node.layer !== undefined ? node.layer : 0) - midLayer) * layerSpacing;
 
       // Z is STRICTLY pinned to layer plane — no displacement
       node.z = exactZ;
@@ -214,7 +204,6 @@ export default function GraphView({
       links: graphData.links || []
     });
 
-    const uniqueLayers = [...new Set(filteredGraphData.nodes.map((n) => n.layer))].sort((a, b) => a - b);
 
     // ── Build fat LineSegments2 for actual spring links ──
     const posArray = new Float32Array(totalSegments * 6); // 2 vertices × 3 components
@@ -244,7 +233,6 @@ export default function GraphView({
 
     const lineSegments = new LineSegments2(lineGeometry, lineMaterial);
 
-    lineSegments.visible = config.showLinks;
     graph.scene().add(lineSegments);
     linksRef.current = { lineSegments, lineGeometry, lineMaterial, linkPairs, posArray };
 
@@ -274,10 +262,9 @@ export default function GraphView({
       }
     });
 
-    // ── Position camera to see all layers ──
-    const midZ = ((uniqueLayers.length - 1) * layerSpacing) / 2;
+    // ── Position camera to see all layers (layers are centered at z=0) ──
     setTimeout(() => {
-      graph.cameraPosition({ x: 0, y: 80, z: midZ + 700 }, { x: 0, y: 0, z: midZ }, 0);
+      graph.cameraPosition({ x: 0, y: 80, z: 700 }, { x: 0, y: 0, z: 0 }, 0);
     }, 100);
 
     graphRef.current = graph;
@@ -291,13 +278,6 @@ export default function GraphView({
       graph._destructor && graph._destructor();
     };
   }, [filteredGraphData, onNodeSelect]);
-  // ── Update visual toggles (no physics impact) ──
-  useEffect(() => {
-    if (linksRef.current) {
-      linksRef.current.lineSegments.visible = config.showLinks;
-    }
-  }, [config.showLinks]);
-
   // ── Update forces when physics config changes ──
   useEffect(() => {
     configRef.current = config;
@@ -320,28 +300,35 @@ export default function GraphView({
     // Update simulation damping
     graph.d3VelocityDecay(config.damping);
 
-    graph.nodeThreeObject(graph.nodeThreeObject());
     graph.d3ReheatSimulation();
   }, [config.repulsionStrength, config.repulsionMaxDistance, config.springStrength, config.springRestLength, config.damping]);
+
+  // ── Update layer Z positions when layerSpacing changes ──
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
+
+    const nodes = graph.graphData().nodes;
+    const ls = nodes.map((n) => n.layer !== undefined ? n.layer : 0);
+    const mid = (Math.min(...ls) + Math.max(...ls)) / 2;
+    for (const node of nodes) {
+      const exactZ = ((node.layer !== undefined ? node.layer : 0) - mid) * config.layerSpacing;
+      node.z = exactZ;
+      node.fz = exactZ;
+      node.vz = 0;
+      node._layerZ = exactZ;
+    }
+
+    graph.d3ReheatSimulation();
+  }, [config.layerSpacing]);
 
   // Reset view button behavior
   useEffect(() => {
     const graph = graphRef.current;
     if (!graph) return;
 
-    const nodes = filteredGraphData.nodes || [];
-    const layers = [
-      ...new Set(
-        nodes
-          .map((node) => node.layer)
-          .filter((layer) => layer !== undefined && layer !== null)
-      ),
-    ].sort((a, b) => a - b);
-
-    const midZ =
-      layers.length > 0
-        ? ((layers[0] + layers[layers.length - 1]) * layerSpacing) / 2
-        : 0;
+    // Layers are centered at z=0
+    const midZ = 0;
 
     graph.cameraPosition({ x: 0, y: 80, z: midZ + 700 }, { x: 0, y: 0, z: midZ }, 800);
   }, [resetViewTrigger, filteredGraphData]);

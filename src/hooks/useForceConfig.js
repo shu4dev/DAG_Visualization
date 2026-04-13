@@ -21,10 +21,9 @@ export function useForceConfig() {
     // 0.30: low friction — lets the system push outliers all the way out
     damping: 0.30,
 
-    // Visual toggles
-    showLabels: true,
-    showLinks: true,
-    showForceField: false,
+    // Z-axis spacing between layers (visual only, no physics impact)
+    layerSpacing: 120,
+
   });
 
   const updateConfig = useCallback((key, value) => {
