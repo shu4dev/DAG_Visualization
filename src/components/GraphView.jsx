@@ -50,7 +50,7 @@ export default function GraphView({
 
     
     const graph = ForceGraph3D()(containerRef.current)
-      .backgroundColor('#0a0e17')
+      .backgroundColor('#1a2233')
       .showNavInfo(false)
       //graph.width(containerRef.current.clientWidth);
       //graph.height(containerRef.current.clientHeight);
