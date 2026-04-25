@@ -17,7 +17,12 @@ import FlyCamera from './Flycamera';
  * Applies two custom forces:
  *   1. Within-layer repulsion  — spreads same-layer nodes apart
  *   2. Cross-layer springs     — pulls connected nodes toward x-y alignment
+ *   3. Soft wall repulsion     — keeps nodes inside the stage bounds
  * Z positions are locked to layer planes; only x-y are free.
+ *
+ * Stage geometry mirrors the "Interactive Shadows" paper (UIST '92):
+ *   floor + back wall + side wall forming a room corner, with orthographic
+ *   shadow projections of each node onto all three surfaces.
  */
 export default function GraphView({
   graphData,
@@ -27,119 +32,207 @@ export default function GraphView({
   resetViewTrigger,
 }) {
   const containerRef = useRef(null);
-  const graphRef = useRef(null);
-  const linksRef = useRef(null);
+  const graphRef     = useRef(null);
+  const linksRef     = useRef(null);
   const repulsionRef = useRef(null);
-  const springRef = useRef(null);
-  const configRef = useRef(config);
+  const springRef    = useRef(null);
+  const configRef    = useRef(config);
 
   // Shared with FlyCamera — when true, click handlers are skipped
   const flyActiveRef = useRef(false);
   const layerSpacing = config.layerSpacing;
 
   const filteredGraphData = useMemo(() => {
-    if (!graphData?.nodes || !graphData?.links) {
-      return { nodes: [], links: [] };
-    }
+    if (!graphData?.nodes || !graphData?.links) return { nodes: [], links: [] };
     return graphData;
   }, [graphData]);
 
+  // ─────────────────────────────────────────────────────────────────────────
   // Initialize the graph
+  // ─────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!containerRef.current) return;
 
-    
     const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#1a2233')
       .showNavInfo(false)
-      //graph.width(containerRef.current.clientWidth);
-      //graph.height(containerRef.current.clientHeight);
 
-      // --- Node rendering (fully custom hologram) ---
+      // ── Node rendering (fully custom hologram) ──
       .nodeThreeObjectExtend(false)
       .nodeThreeObject((node) => {
-        const cfg = configRef.current;
         const isSelected = selectedNode && selectedNode.id === node.id;
-        const group = createHologramNode(node);
-      
-        const s = 0.5 + (node.weight || 10) / 50;
+        const group      = createHologramNode(node);
+
+        group.traverse((child) => {
+          if (child.isMesh) child.castShadow = true;
+        });
+
+        const s           = 0.5 + (node.weight || 10) / 50;
         const outerRadius = 8.5 * s;
 
-        {
-          const sprite = new SpriteText(node.label || node.id);
-          sprite.color = '#e2e8f0';
-          sprite.textHeight = Math.max(2.5, outerRadius * 0.25);
-          sprite.position.y = outerRadius + 3;
-          sprite.fontFace = 'DM Sans, sans-serif';
-          sprite.backgroundColor = isSelected
-            ? 'rgba(15, 23, 42, 0.9)'
-            : 'rgba(15, 23, 42, 0.7)';
-          sprite.padding = isSelected ? 2.5 : 1.5;
-          sprite.borderRadius = 3;
-          group.add(sprite);
+        const sprite          = new SpriteText(node.label || node.id);
+        sprite.color          = '#e2e8f0';
+        sprite.textHeight     = Math.max(2.5, outerRadius * 0.25);
+        sprite.position.y     = outerRadius + 3;
+        sprite.fontFace       = 'DM Sans, sans-serif';
+        sprite.backgroundColor = isSelected
+          ? 'rgba(15, 23, 42, 0.9)'
+          : 'rgba(15, 23, 42, 0.7)';
+        sprite.padding      = isSelected ? 2.5 : 1.5;
+        sprite.borderRadius = 3;
+        group.add(sprite);
+
+        if (isSelected) {
+          const ringMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(outerRadius * 1.35, 24, 24),
+            new THREE.MeshBasicMaterial({
+              color: '#ffffff',
+              transparent: true,
+              opacity: 0.18,
+              wireframe: true,
+            })
+          );
+          group.add(ringMesh);
         }
 
-      
-        if (isSelected) {
-          const ringGeometry = new THREE.SphereGeometry(outerRadius * 1.35, 24, 24);
-          const ringMaterial = new THREE.MeshBasicMaterial({
-            color: '#ffffff',
-            transparent: true,
-            opacity: 0.18,
-            wireframe: true,
-          });
-          const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-          group.add(ring);
-        }
-      
         return group;
       })
-      // --- Interaction ---
-      .onNodeClick((node) => {
-        if (flyActiveRef.current) return; // fly mode owns clicks
 
+      // ── Interaction ──
+      .onNodeClick((node) => {
+        if (flyActiveRef.current) return;
         if (onNodeSelect) onNodeSelect(node);
 
-        const distance = 200;
-        const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+        const distance   = 200;
+        const distRatio  = 1 + distance / Math.hypot(node.x, node.y, node.z);
         graph.cameraPosition(
-          {
-            x: node.x * distRatio,
-            y: node.y * distRatio + 30,
-            z: node.z * distRatio + 40,
-          },
+          { x: node.x * distRatio, y: node.y * distRatio + 30, z: node.z * distRatio + 40 },
           { x: node.x, y: node.y, z: node.z },
           900
         );
       })
       .onNodeDrag((node) => {
-        // During drag: pin x/y to mouse position, keep z strictly on layer
         if (node._layerZ !== undefined) {
-          node.z = node._layerZ;
+          node.z  = node._layerZ;
           node.fz = node._layerZ;
           node.vz = 0;
         }
       })
       .onNodeDragEnd((node) => {
-        // Release x/y pins so the simulation can take over again
         node.fx = undefined;
         node.fy = undefined;
-        // Keep z strictly locked
         if (node._layerZ !== undefined) {
-          node.z = node._layerZ;
+          node.z  = node._layerZ;
           node.fz = node._layerZ;
           node.vz = 0;
         }
         graph.d3ReheatSimulation();
       })
       .onBackgroundClick(() => {
-        if (flyActiveRef.current) return; // fly mode owns clicks
+        if (flyActiveRef.current) return;
         if (onNodeSelect) onNodeSelect(null);
       });
 
+    // ── Scene references ──
+    const scene    = graph.scene();
+    const renderer = graph.renderer();
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+
+    // ── Stage dimensions ──
+    const stageWidth = 900;
+    const stageDepth = Math.max(700, config.layerSpacing * 5);
+    const floorY     = -220;
+    const backWallZ  = -stageDepth / 2;
+
+    // ── Stage geometry constants (reused in forces + tick) ──
+    const xLimit = stageWidth / 2 - 60;   // soft-wall x boundary (with margin)
+    const yMax   =  180;                   // ceiling
+    const yMin   = floorY + 30;            // just above floor
+
+    // ─── Floor ───────────────────────────────────────────────
+    const floorGeometry = new THREE.PlaneGeometry(stageWidth, stageDepth);
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: '#303946', roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide,
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, floorY, 0);
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // ─── Back wall ───────────────────────────────────────────
+    const wallGeometry = new THREE.PlaneGeometry(stageWidth, 520);
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      color: '#202938', roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
+    });
+    const backWall = new THREE.Mesh(wallGeometry, wallMaterial);
+    backWall.position.set(0, floorY + 260, backWallZ);
+    backWall.receiveShadow = true;
+    scene.add(backWall);
+
+    // ─── Side wall (completes the stage corner, per the paper) ──
+    const sideWallGeometry = new THREE.PlaneGeometry(stageDepth, 520);
+    const sideWallMaterial = new THREE.MeshStandardMaterial({
+      color: '#1e2a38', roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
+    });
+    const sideWall = new THREE.Mesh(sideWallGeometry, sideWallMaterial);
+    sideWall.rotation.y = Math.PI / 2;
+    sideWall.position.set(-(stageWidth / 2), floorY + 260, 0);
+    sideWall.receiveShadow = true;
+    scene.add(sideWall);
+
+    // ─── Lighting ─────────────────────────────────────────────
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    directionalLight.position.set(250, 500, 350);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width  = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.camera.left   = -700;
+    directionalLight.shadow.camera.right  =  700;
+    directionalLight.shadow.camera.top    =  700;
+    directionalLight.shadow.camera.bottom = -700;
+    directionalLight.shadow.camera.near   = 1;
+    directionalLight.shadow.camera.far    = 1500;
+    scene.add(directionalLight);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
+
+    // ─── Shadow projections (floor + back wall + side wall) ──
+    // One InstancedMesh per surface — updated every tick (no Z-fighting because
+    // each mesh is parked at its surface with a tiny epsilon offset).
+    const nodeCount  = filteredGraphData.nodes.length;
+    const shadowGeo  = new THREE.CircleGeometry(6, 16);
+    const shadowMat  = new THREE.MeshBasicMaterial({
+      color: 0x000000, transparent: true, opacity: 0.30, depthWrite: false,
+    });
+
+    // Floor shadows  — lie flat on the floor (circle already in XY, rotate to XZ)
+    const floorShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
+    floorShadows.rotation.x = -Math.PI / 2;
+    floorShadows.position.y = floorY + 0.5;          // epsilon above floor
+    floorShadows.renderOrder = 1;
+    scene.add(floorShadows);
+
+    // Back-wall shadows — stand upright on the back wall
+    const backWallShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
+    backWallShadows.position.z = backWallZ + 0.5;    // epsilon in front of wall
+    backWallShadows.renderOrder = 1;
+    scene.add(backWallShadows);
+
+    // Side-wall shadows — rotate to face the side wall
+    const sideWallShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
+    sideWallShadows.rotation.y = Math.PI / 2;
+    sideWallShadows.position.x = -(stageWidth / 2) + 0.5;  // epsilon in front of wall
+    sideWallShadows.renderOrder = 1;
+    scene.add(sideWallShadows);
+
+    const _dummy = new THREE.Object3D();
+
     // ── Disable all default d3 forces ──
     graph.d3Force('charge', null);
-    graph.d3Force('link', null);
+    graph.d3Force('link',   null);
     graph.d3Force('center', null);
 
     // ── Custom Force 1: Within-layer repulsion ──
@@ -159,65 +252,74 @@ export default function GraphView({
     graph.d3Force('crossLayerSpring', spring);
     springRef.current = spring;
 
-    // ── Set simulation damping (velocityDecay) ──
+    // ── Custom Force 3: Soft wall boundary repulsion ──
+    // Smoothly decelerates nodes as they approach stage edges so they never
+    // drift outside the visible floor/wall surfaces.
+    const wallRepulsion = (() => {
+      const k = 1.2; // stiffness — increase if nodes still escape at high repulsion
+
+      return (alpha) => {
+        for (const node of filteredGraphData.nodes) {
+          if (node.x >  xLimit) node.vx -= (node.x -  xLimit) * k * alpha;
+          if (node.x < -xLimit) node.vx += (-xLimit - node.x) * k * alpha;
+          if (node.y >  yMax)   node.vy -= (node.y -  yMax)   * k * alpha;
+          if (node.y <  yMin)   node.vy += (yMin   - node.y)  * k * alpha;
+        }
+      };
+    })();
+    graph.d3Force('wallRepulsion', wallRepulsion);
+
+    // ── Simulation damping ──
     graph.d3VelocityDecay(config.damping);
 
-    // ── Position nodes: random x/y (FREE), z strictly locked to layer ──
-    const layers = filteredGraphData.nodes.map((n) => n.layer !== undefined ? n.layer : 0);
+    // ── Initial node positions: random x/y (FREE), z locked to layer ──
+    const layers  = filteredGraphData.nodes.map((n) => n.layer !== undefined ? n.layer : 0);
     const midLayer = (Math.min(...layers) + Math.max(...layers)) / 2;
+
     for (const node of filteredGraphData.nodes) {
       const exactZ = ((node.layer !== undefined ? node.layer : 0) - midLayer) * layerSpacing;
 
-      // Z is STRICTLY pinned to layer plane — no displacement
-      node.z = exactZ;
-      node.fz = exactZ;
-      node.vz = 0;
-      node._layerZ = exactZ; // stash for hard reset each tick
+      node.z       = exactZ;
+      node.fz      = exactZ;
+      node.vz      = 0;
+      node._layerZ = exactZ;
 
-      // x/y are FREE — the simulation will move them via repulsion + springs
       if (node.x === undefined) node.x = (Math.random() - 0.5) * 200;
       if (node.y === undefined) node.y = (Math.random() - 0.5) * 200;
-      // Do NOT set fx/fy — leave them free for the force simulation
     }
 
-    // ── Build link pairs from actual graph links for visual lines ──
-    // We need node references resolved by id for drawing lines.
-    // At this point nodes have positions but graphData hasn't been fed to the
-    // graph yet (which would mutate link.source/target to objects), so we
-    // resolve manually from our own node array.
+    // ── Resolve link node references for line drawing ──
     const nodeById = new Map();
     for (const node of filteredGraphData.nodes) nodeById.set(node.id, node);
 
-    const linkPairs = []; // flat array: [srcNode, tgtNode, srcNode, tgtNode, …]
+    const linkPairs = [];
     for (const link of filteredGraphData.links) {
       const src = typeof link.source === 'object' ? link.source : nodeById.get(link.source);
       const tgt = typeof link.target === 'object' ? link.target : nodeById.get(link.target);
-      if (src && tgt) {
-        linkPairs.push(src, tgt);
-      }
+      if (src && tgt) linkPairs.push(src, tgt);
     }
+
     const totalSegments = linkPairs.length / 2;
 
-    // Set graph data (simulation starts with already-pinned nodes)
+    // ── Feed data to graph ──
     graph.graphData({
       nodes: graphData.nodes || [],
-      links: graphData.links || []
+      links: graphData.links || [],
     });
 
+    // ── Fat LineSegments2 for spring links ──
+    const posArray = new Float32Array(totalSegments * 6);
 
-    // ── Build fat LineSegments2 for actual spring links ──
-    const posArray = new Float32Array(totalSegments * 6); // 2 vertices × 3 components
     for (let s = 0; s < totalSegments; s++) {
       const src = linkPairs[s * 2];
       const tgt = linkPairs[s * 2 + 1];
-      posArray[s * 6]     = src.x; posArray[s * 6 + 1] = src.y; posArray[s * 6 + 2] = src.z;
-      posArray[s * 6 + 3] = tgt.x; posArray[s * 6 + 4] = tgt.y; posArray[s * 6 + 5] = tgt.z;
+      posArray[s * 6]     = src.x;  posArray[s * 6 + 1] = src.y;  posArray[s * 6 + 2] = src.z;
+      posArray[s * 6 + 3] = tgt.x;  posArray[s * 6 + 4] = tgt.y;  posArray[s * 6 + 5] = tgt.z;
     }
 
     const lineGeometry = new LineSegmentsGeometry();
     lineGeometry.setPositions(posArray);
 
-    const renderer = graph.renderer();
     const size = new THREE.Vector2();
     renderer.getSize(size);
 
@@ -232,20 +334,23 @@ export default function GraphView({
     });
 
     const lineSegments = new LineSegments2(lineGeometry, lineMaterial);
-
     graph.scene().add(lineSegments);
     linksRef.current = { lineSegments, lineGeometry, lineMaterial, linkPairs, posArray };
 
-    // ── Update visuals each tick ──
+    // ── Per-tick update: z-lock + hard x/y clamp + links + shadow projections ──
     graph.onEngineTick(() => {
-      // HARD Z-LOCK: force every node back to its exact layer z every tick.
-      // This is belt-and-suspenders on top of fz — it catches any floating
-      // point drift or vz leakage from the d3-force integration step.
       for (const node of filteredGraphData.nodes) {
+        // Belt-and-suspenders z-lock (catches any fp drift from fz)
         if (node._layerZ !== undefined) {
-          node.z = node._layerZ;
+          node.z  = node._layerZ;
           node.vz = 0;
         }
+
+        // Hard x/y clamp — last line of defence after soft wall force
+        if (node.x >  xLimit) { node.x =  xLimit; node.vx = 0; }
+        if (node.x < -xLimit) { node.x = -xLimit; node.vx = 0; }
+        if (node.y >  yMax)   { node.y =  yMax;   node.vy = 0; }
+        if (node.y <  yMin)   { node.y =  yMin;   node.vy = 0; }
       }
 
       // Update link line positions
@@ -255,53 +360,99 @@ export default function GraphView({
         for (let s = 0; s < segs; s++) {
           const src = pairs[s * 2];
           const tgt = pairs[s * 2 + 1];
-          pos[s * 6]     = src.x; pos[s * 6 + 1] = src.y; pos[s * 6 + 2] = src.z;
-          pos[s * 6 + 3] = tgt.x; pos[s * 6 + 4] = tgt.y; pos[s * 6 + 5] = tgt.z;
+          pos[s * 6]     = src.x;  pos[s * 6 + 1] = src.y;  pos[s * 6 + 2] = src.z;
+          pos[s * 6 + 3] = tgt.x;  pos[s * 6 + 4] = tgt.y;  pos[s * 6 + 5] = tgt.z;
         }
         linksRef.current.lineGeometry.setPositions(pos);
       }
+
+      // ── Shadow projections (UIST '92 stage metaphor) ──
+      // Each node casts an orthographic projection onto floor, back wall, side wall.
+      // The InstancedMesh for each surface is already translated/rotated to sit at
+      // the correct plane — we only need to supply x/y offsets within that plane.
+      filteredGraphData.nodes.forEach((node, i) => {
+        const s = 0.5 + (node.weight || 10) / 50;
+
+        // Floor shadow: drop onto XZ plane (position is in the mesh's local XY
+        // which, after the -90° X rotation, maps to world XZ)
+        _dummy.position.set(node.x, node.z, 0);
+        _dummy.scale.setScalar(s);
+        _dummy.updateMatrix();
+        floorShadows.setMatrixAt(i, _dummy.matrix);
+
+        // Back-wall shadow: project onto XY plane at z = backWallZ
+        // Local position is just (x, y) — the mesh already sits at backWallZ
+        _dummy.position.set(node.x, node.y - floorY - 260, 0);
+        _dummy.scale.setScalar(s);
+        _dummy.updateMatrix();
+        backWallShadows.setMatrixAt(i, _dummy.matrix);
+
+        // Side-wall shadow: project onto YZ plane at x = -(stageWidth/2)
+        // After the 90° Y rotation, local X→world Z, local Y→world Y
+        _dummy.position.set(node.z, node.y - floorY - 260, 0);
+        _dummy.scale.setScalar(s);
+        _dummy.updateMatrix();
+        sideWallShadows.setMatrixAt(i, _dummy.matrix);
+      });
+
+      floorShadows.instanceMatrix.needsUpdate    = true;
+      backWallShadows.instanceMatrix.needsUpdate = true;
+      sideWallShadows.instanceMatrix.needsUpdate = true;
     });
 
-    // ── Position camera to see all layers (layers are centered at z=0) ──
+    // ── Initial camera position ──
     setTimeout(() => {
       graph.cameraPosition({ x: 0, y: 80, z: 700 }, { x: 0, y: 0, z: 0 }, 0);
     }, 100);
 
     graphRef.current = graph;
 
+    // ── Cleanup ──
     return () => {
+      scene.remove(floor, backWall, sideWall);
+      scene.remove(directionalLight, ambientLight);
+      scene.remove(floorShadows, backWallShadows, sideWallShadows);
+
+      floorGeometry.dispose();    floorMaterial.dispose();
+      wallGeometry.dispose();     wallMaterial.dispose();
+      sideWallGeometry.dispose(); sideWallMaterial.dispose();
+      shadowGeo.dispose();        shadowMat.dispose();
+
       if (linksRef.current) {
+        scene.remove(linksRef.current.lineSegments);
         linksRef.current.lineGeometry.dispose();
         linksRef.current.lineMaterial.dispose();
         linksRef.current = null;
       }
+
       graph._destructor && graph._destructor();
     };
-  }, [filteredGraphData, onNodeSelect]);
+  }, [filteredGraphData, onNodeSelect, selectedNode, graphData, config, layerSpacing]);
+
   // ── Update forces when physics config changes ──
   useEffect(() => {
     configRef.current = config;
-
     const graph = graphRef.current;
     if (!graph) return;
 
-    // Update repulsion parameters
     if (repulsionRef.current) {
       repulsionRef.current.strength(config.repulsionStrength);
       repulsionRef.current.maxDistance(config.repulsionMaxDistance);
     }
-
-    // Update spring parameters
     if (springRef.current) {
       springRef.current.strength(config.springStrength);
       springRef.current.restLength(config.springRestLength);
     }
 
-    // Update simulation damping
     graph.d3VelocityDecay(config.damping);
-
     graph.d3ReheatSimulation();
-  }, [config.repulsionStrength, config.repulsionMaxDistance, config.springStrength, config.springRestLength, config.damping]);
+  }, [
+    config.repulsionStrength,
+    config.repulsionMaxDistance,
+    config.springStrength,
+    config.springRestLength,
+    config.damping,
+  ]);
 
   // ── Update layer Z positions when layerSpacing changes ──
   useEffect(() => {
@@ -309,55 +460,57 @@ export default function GraphView({
     if (!graph) return;
 
     const nodes = graph.graphData().nodes;
-    const ls = nodes.map((n) => n.layer !== undefined ? n.layer : 0);
-    const mid = (Math.min(...ls) + Math.max(...ls)) / 2;
+    const ls    = nodes.map((n) => (n.layer !== undefined ? n.layer : 0));
+    const mid   = (Math.min(...ls) + Math.max(...ls)) / 2;
+
     for (const node of nodes) {
       const exactZ = ((node.layer !== undefined ? node.layer : 0) - mid) * config.layerSpacing;
-      node.z = exactZ;
-      node.fz = exactZ;
-      node.vz = 0;
+      node.z       = exactZ;
+      node.fz      = exactZ;
+      node.vz      = 0;
       node._layerZ = exactZ;
     }
 
     graph.d3ReheatSimulation();
   }, [config.layerSpacing]);
 
-  // Reset view button behavior
+  // ── Reset view ──
   useEffect(() => {
     const graph = graphRef.current;
     if (!graph) return;
-
-    // Layers are centered at z=0
-    const midZ = 0;
-
-    graph.cameraPosition({ x: 0, y: 80, z: midZ + 700 }, { x: 0, y: 0, z: midZ }, 800);
+    graph.cameraPosition(
+      { x: 0, y: 80, z: 700 },
+      { x: 0, y: 0,  z: 0   },
+      800
+    );
   }, [resetViewTrigger, filteredGraphData]);
 
-  // Handle window resize
+  // ── Window resize ──
   useEffect(() => {
     const handleResize = () => {
       if (graphRef.current && containerRef.current) {
         graphRef.current.width(containerRef.current.clientWidth);
         graphRef.current.height(containerRef.current.clientHeight);
+
         if (linksRef.current?.lineMaterial) {
-          const renderer = graphRef.current.renderer();
           const sz = new THREE.Vector2();
-          renderer.getSize(sz);
+          graphRef.current.renderer().getSize(sz);
           linksRef.current.lineMaterial.resolution.set(sz.x, sz.y);
         }
       }
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* Graph canvas mounts here */}
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      {/* HUD overlay sits above the canvas */}
-      <FlyCamera graphRef={graphRef} flyActiveRef={flyActiveRef} containerRef={containerRef} />
+      <FlyCamera
+        graphRef={graphRef}
+        flyActiveRef={flyActiveRef}
+        containerRef={containerRef}
+      />
     </div>
   );
 }
