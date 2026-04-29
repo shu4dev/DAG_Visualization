@@ -4,6 +4,7 @@ import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
 import { useForceConfig } from './hooks/useForceConfig';
 import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/sampleData';
+import scrapyDeps from './data/scrapy-deps.json';
 
 /**
  * App Component
@@ -22,7 +23,7 @@ export default function App() {
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
     setError(null);
-    const data = generateSampleData();
+    const data = parseAnyGraphInput(scrapyDeps);
     setGraphData(data);
     setSelectedNode(null);
   }, []);

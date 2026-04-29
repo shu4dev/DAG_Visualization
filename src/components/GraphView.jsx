@@ -98,16 +98,16 @@ export default function GraphView({
     const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#1a2233')
       .showNavInfo(false)
-       .linkOpacity(0) // we'll draw custom lines, so hide the built-in ones
-
-      //graph.width(containerRef.current.clientWidth);
-      //graph.height(containerRef.current.clientHeight);
+      .linkOpacity(0) // we'll draw custom lines, so hide the built-in ones
 
       // ── Node rendering (fully custom hologram) ──
       .nodeThreeObjectExtend(false)
       .nodeThreeObject((node) => {
-        const isSelected = selectedNode && selectedNode.id === node.id;
-        const group      = createHologramNode(node);
+        const isSelected = selectedNodeIdRef.current === node.id;
+        const highlightSet = highlightNodeIdsRef.current;
+        const isDimmed = highlightSet.size > 0 && !highlightSet.has(node.id);
+
+        const group = createHologramNode({ ...node, isSelected, isDimmed });
 
         group.traverse((child) => {
           if (child.isMesh) child.castShadow = true;
@@ -377,12 +377,9 @@ export default function GraphView({
       links: graphData.links || [],
     });
 
-    // ── Fat LineSegments2 for spring links ──
-    const posArray = new Float32Array(totalSegments * 6);
-
     // ── Build fat LineSegments2 for actual spring links ──
     const posArray = new Float32Array(totalSegments * 6); // 2 vertices × 3 components
-    const colorArray = new Float32Array(totalSegments * 6);// optional: per-vertex colors if you want gradients
+    const colorArray = new Float32Array(totalSegments * 6); // per-vertex colors for highlight/dim
     for (let s = 0; s < totalSegments; s++) {
       const src = linkPairs[s * 2];
       const tgt = linkPairs[s * 2 + 1];
@@ -438,7 +435,6 @@ export default function GraphView({
       if (linksRef.current) {
         const { linkPairs: pairs, posArray: pos } = linksRef.current;
         const segs = pairs.length / 2;
-        const activeLinkIndices = highlightLinkIndicesRef.current;
 
         for (let s = 0; s < segs; s++) {
           const src = pairs[s * 2];
@@ -531,7 +527,7 @@ export default function GraphView({
 
       graph._destructor && graph._destructor();
     };
-  }, [filteredGraphData, onNodeSelect, selectedNode, graphData, config, layerSpacing]);
+  }, [filteredGraphData, onNodeSelect]);
 
   // ── Update forces when physics config changes ──
   useEffect(() => {

@@ -19,7 +19,6 @@ venv/
 *.egg-info/
 
 # ── Generated data files ──
-data/*.json
 *.json
 !package.json
 !pipeline/schema.json
