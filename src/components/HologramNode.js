@@ -14,19 +14,67 @@ export function createHologramNode(node) {
   // Scale factor: weight 10 → ~0.7x, weight 170 → ~3.9x
   const s = 0.5 + (w / 50);
   const color = new THREE.Color(node.color || '#3b82f6');
+  const isSimplified = Boolean(node.simplifiedMode);
+  const isSelected = node.isSelected;
+  const isDimmed = node.isDimmed;
+
+  if (isSimplified) {
+    const simpleGeometry = new THREE.SphereGeometry(3 * s, 8, 8);
+    const simpleMaterial = new THREE.MeshBasicMaterial({
+      color: color,
+      transparent: true,
+      opacity: isDimmed ? 0.32 : 1,
+    });
+    group.add(new THREE.Mesh(simpleGeometry, simpleMaterial));
+
+    if (isSelected) {
+      const haloGeometry = new THREE.RingGeometry(3.5 * s, 4.1 * s, 16);
+      const haloMaterial = new THREE.MeshBasicMaterial({
+        color: '#facc15',
+        transparent: true,
+        opacity: 0.28,
+        side: THREE.DoubleSide,
+      });
+      const halo = new THREE.Mesh(haloGeometry, haloMaterial);
+      halo.rotation.x = Math.PI / 2;
+      halo.position.y = 0.1;
+      group.add(halo);
+    }
+
+    return group;
+  }
 
   // 1. Plasma Core (emissive glowing center)
-  const coreGeometry = new THREE.SphereGeometry(3 * s, 32, 32);
+  const coreGeometry = new THREE.SphereGeometry(3 * s, 32, 32); //(3 * s, 32, 32)
   const coreMaterial = new THREE.MeshStandardMaterial({
     color: color.clone().offsetHSL(0, 0, 0.3),
     emissive: color,
     emissiveIntensity: 2,
     roughness: 0.8,
   });
+  let coreIntensity = 1.0;
+  let beltOpacity = 0.35;
+  let trailOpacity = 0.18;
+  let haloOpacity = 0.03;
+
+  if (isSelected) {
+    coreIntensity = 6.0;
+    beltOpacity = 1.0;
+    trailOpacity = 1.0;
+    haloOpacity = 0.28;
+  } else if (isDimmed) {
+    coreIntensity = 0.12;
+    beltOpacity = 0.05;
+    trailOpacity = 0.03;
+    haloOpacity = 0.0;
+  }
+
+  coreMaterial.emissiveIntensity = coreIntensity;
+
   group.add(new THREE.Mesh(coreGeometry, coreMaterial));
 
   // 2. Asteroid Belt (particle ring)
-  const particleCount = 400;
+  const particleCount = 400; // 400
   const particlesGeometry = new THREE.BufferGeometry();
   const positions = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
@@ -42,7 +90,7 @@ export function createHologramNode(node) {
     color: color.clone().offsetHSL(0.05, -0.2, 0.1),
     size: 0.15 * s,
     transparent: true,
-    opacity: 0.8,
+    opacity: beltOpacity,
   });
   const asteroidBelt = new THREE.Points(particlesGeometry, particlesMaterial);
   asteroidBelt.rotation.x = Math.PI / 8;
@@ -53,7 +101,7 @@ export function createHologramNode(node) {
   const trailMaterial = new THREE.MeshBasicMaterial({
     color: color.clone().offsetHSL(0, -0.3, 0.4),
     transparent: true,
-    opacity: 0.6,
+    opacity: trailOpacity,
     blending: THREE.AdditiveBlending,
   });
 
@@ -63,18 +111,18 @@ export function createHologramNode(node) {
   trail1.rotation.y = Math.PI / 4;
   group.add(trail1);
 
-  const trail2Geo = new THREE.TorusGeometry(8.5 * s, 0.03 * s, 8, 64);
+  const trail2Geo = new THREE.TorusGeometry(8.5 * s, 0.03 * s, 8, 64); //8,64
   const trail2 = new THREE.Mesh(trail2Geo, trailMaterial);
   trail2.rotation.x = -Math.PI / 4;
   trail2.rotation.y = Math.PI / 8;
   group.add(trail2);
 
   // 4. Outer Atmosphere / Halo
-  const haloGeometry = new THREE.SphereGeometry(4.5 * s, 32, 32);
+  const haloGeometry = new THREE.SphereGeometry(4.5 * s, 32, 32); //(4.5 * s, 32, 32)
   const haloMaterial = new THREE.MeshBasicMaterial({
     color: color,
     transparent: true,
-    opacity: 0.1,
+    opacity: haloOpacity,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
