@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
@@ -32,10 +32,16 @@ export default function GraphView({
   const repulsionRef = useRef(null);
   const springRef = useRef(null);
   const configRef = useRef(config);
+  const selectedNodeIdRef = useRef(null);
+  const highlightNodeIdsRef = useRef(new Set());
+  const highlightLinkIndicesRef = useRef(new Set());
 
   // Shared with FlyCamera — when true, click handlers are skipped
   const flyActiveRef = useRef(false);
   const layerSpacing = config.layerSpacing;
+
+  const [highlightNodeIds, setHighlightNodeIds] = useState(new Set());
+  const [highlightLinkIndices, setHighlightLinkIndices] = useState(new Set());
 
   const filteredGraphData = useMemo(() => {
     if (!graphData?.nodes || !graphData?.links) {
@@ -44,14 +50,53 @@ export default function GraphView({
     return graphData;
   }, [graphData]);
 
+  const getNodeId = (nodeOrId) =>
+    typeof nodeOrId === 'object' ? nodeOrId.id : nodeOrId;
+  const getSubgraph = (clickedNode, links) => {
+    const clickedId = getNodeId(clickedNode);
+
+    const nodeIds = new Set([clickedId]);
+    const linkIndices = new Set();
+
+    const queue = [clickedId];
+    const visited = new Set([clickedId]);
+
+    while (queue.length) {
+      const current = queue.shift();
+
+      links.forEach((link, index) => {
+        const s = getNodeId(link.source);
+        const t = getNodeId(link.target);
+
+        if (s === current && !visited.has(t)) {
+          visited.add(t);
+          queue.push(t);
+          nodeIds.add(t);
+          linkIndices.add(index);
+        }
+
+        if (t === current && !visited.has(s)) {
+          visited.add(s);
+          queue.push(s);
+          nodeIds.add(s);
+          linkIndices.add(index);
+        }
+      });
+    }
+
+    return { nodeIds, linkIndices };
+  };
+
   // Initialize the graph
   useEffect(() => {
     if (!containerRef.current) return;
 
-    
+
     const graph = ForceGraph3D()(containerRef.current)
       .backgroundColor('#0a0e17')
       .showNavInfo(false)
+       .linkOpacity(0) // we'll draw custom lines, so hide the built-in ones
+
       //graph.width(containerRef.current.clientWidth);
       //graph.height(containerRef.current.clientHeight);
 
@@ -59,9 +104,20 @@ export default function GraphView({
       .nodeThreeObjectExtend(false)
       .nodeThreeObject((node) => {
         const cfg = configRef.current;
-        const isSelected = selectedNode && selectedNode.id === node.id;
-        const group = createHologramNode(node);
-      
+
+        const activeNodeIds = highlightNodeIdsRef.current;// from ref to ensure latest in tick updates
+        const selectedNodeId = selectedNodeIdRef.current;
+
+        const isSelected = selectedNodeId === node.id;
+        const isDimmed =
+          activeNodeIds.size > 0 && !activeNodeIds.has(node.id);
+
+        const group = createHologramNode({
+          ...node,
+          isSelected,
+          isDimmed,
+        });
+
         const s = 0.5 + (node.weight || 10) / 50;
         const outerRadius = 8.5 * s;
 
@@ -79,7 +135,7 @@ export default function GraphView({
           group.add(sprite);
         }
 
-      
+
         if (isSelected) {
           const ringGeometry = new THREE.SphereGeometry(outerRadius * 1.35, 24, 24);
           const ringMaterial = new THREE.MeshBasicMaterial({
@@ -91,7 +147,7 @@ export default function GraphView({
           const ring = new THREE.Mesh(ringGeometry, ringMaterial);
           group.add(ring);
         }
-      
+
         return group;
       })
       // --- Interaction ---
@@ -99,6 +155,18 @@ export default function GraphView({
         if (flyActiveRef.current) return; // fly mode owns clicks
 
         if (onNodeSelect) onNodeSelect(node);
+
+        // caculate subgraph 
+        const { nodeIds, linkIndices } = getSubgraph(node, graphData.links);
+        selectedNodeIdRef.current = node.id;
+        highlightNodeIdsRef.current = nodeIds;
+        highlightLinkIndicesRef.current = linkIndices;
+
+        setHighlightNodeIds(new Set(nodeIds));
+        setHighlightLinkIndices(new Set(linkIndices));
+        // Force re-render of all nodes to update highlight states
+        graph.nodeThreeObject(graph.nodeThreeObject());
+        graph.refresh();
 
         const distance = 200;
         const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
@@ -134,6 +202,17 @@ export default function GraphView({
       })
       .onBackgroundClick(() => {
         if (flyActiveRef.current) return; // fly mode owns clicks
+
+        selectedNodeIdRef.current = null;
+        highlightNodeIdsRef.current = new Set();
+        highlightLinkIndicesRef.current = new Set();
+
+        setHighlightNodeIds(new Set());
+        setHighlightLinkIndices(new Set());
+        // Force re-render of all nodes to clear highlights
+        graph.nodeThreeObject(graph.nodeThreeObject());
+        graph.refresh();
+
         if (onNodeSelect) onNodeSelect(null);
       });
 
@@ -207,15 +286,23 @@ export default function GraphView({
 
     // ── Build fat LineSegments2 for actual spring links ──
     const posArray = new Float32Array(totalSegments * 6); // 2 vertices × 3 components
+    const colorArray = new Float32Array(totalSegments * 6);// optional: per-vertex colors if you want gradients
     for (let s = 0; s < totalSegments; s++) {
       const src = linkPairs[s * 2];
       const tgt = linkPairs[s * 2 + 1];
-      posArray[s * 6]     = src.x; posArray[s * 6 + 1] = src.y; posArray[s * 6 + 2] = src.z;
+      posArray[s * 6] = src.x; posArray[s * 6 + 1] = src.y; posArray[s * 6 + 2] = src.z;
       posArray[s * 6 + 3] = tgt.x; posArray[s * 6 + 4] = tgt.y; posArray[s * 6 + 5] = tgt.z;
+      colorArray[s * 6] = 0.4;
+      colorArray[s * 6 + 1] = 0.6;
+      colorArray[s * 6 + 2] = 1.0;
+      colorArray[s * 6 + 3] = 0.4;
+      colorArray[s * 6 + 4] = 0.6;
+      colorArray[s * 6 + 5] = 1.0;
     }
 
     const lineGeometry = new LineSegmentsGeometry();
     lineGeometry.setPositions(posArray);
+    lineGeometry.setColors(colorArray);
 
     const renderer = graph.renderer();
     const size = new THREE.Vector2();
@@ -224,11 +311,12 @@ export default function GraphView({
     const lineMaterial = new LineMaterial({
       color: 0x60a5fa,
       transparent: true,
-      opacity: 0.5,
-      linewidth: 3,
+      opacity: 0.9,
+      linewidth: 4,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       resolution: size,
+      vertexColors: true,
     });
 
     const lineSegments = new LineSegments2(lineGeometry, lineMaterial);
@@ -252,13 +340,36 @@ export default function GraphView({
       if (linksRef.current) {
         const { linkPairs: pairs, posArray: pos } = linksRef.current;
         const segs = pairs.length / 2;
+        const activeLinkIndices = highlightLinkIndicesRef.current;
+
         for (let s = 0; s < segs; s++) {
           const src = pairs[s * 2];
           const tgt = pairs[s * 2 + 1];
-          pos[s * 6]     = src.x; pos[s * 6 + 1] = src.y; pos[s * 6 + 2] = src.z;
+          pos[s * 6] = src.x; pos[s * 6 + 1] = src.y; pos[s * 6 + 2] = src.z;
           pos[s * 6 + 3] = tgt.x; pos[s * 6 + 4] = tgt.y; pos[s * 6 + 5] = tgt.z;
         }
         linksRef.current.lineGeometry.setPositions(pos);
+        const color = colorArray;
+
+        for (let s = 0; s < segs; s++) {
+          const activeLinkIndices = highlightLinkIndicesRef.current;
+
+          const isActive =
+            activeLinkIndices.size === 0 || activeLinkIndices.has(s);
+
+          const r = isActive ? 0.2 : 0.02;
+          const g = isActive ? 0.9 : 0.02;
+          const b = isActive ? 1.0 : 0.02;
+
+          color[s * 6] = r;
+          color[s * 6 + 1] = g;
+          color[s * 6 + 2] = b;
+          color[s * 6 + 3] = r;
+          color[s * 6 + 4] = g;
+          color[s * 6 + 5] = b;
+        }
+
+        linksRef.current.lineGeometry.setColors(color);
       }
     });
 
