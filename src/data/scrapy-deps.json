@@ -1,0 +1,961 @@
+{
+  "nodes": [
+    {
+      "id": "scrapy",
+      "label": "scrapy",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isRoot": true
+      }
+    },
+    {
+      "id": "defusedxml",
+      "label": "defusedxml",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "itemloaders",
+      "label": "itemloaders",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "protego",
+      "label": "protego",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "pydispatcher",
+      "label": "pydispatcher",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "pyopenssl",
+      "label": "pyopenssl",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "pypydispatcher",
+      "label": "pypydispatcher",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "queuelib",
+      "label": "queuelib",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "service-identity",
+      "label": "service-identity",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "tldextract",
+      "label": "tldextract",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "twisted",
+      "label": "twisted",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "attrs",
+      "label": "attrs",
+      "layer": 2,
+      "weight": 26,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "automat",
+      "label": "automat",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "constantly",
+      "label": "constantly",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "cryptography",
+      "label": "cryptography",
+      "layer": 2,
+      "weight": 34,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "filelock",
+      "label": "filelock",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "hyperlink",
+      "label": "hyperlink",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "incremental",
+      "label": "incremental",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "itemadapter",
+      "label": "itemadapter",
+      "layer": 2,
+      "weight": 26,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "parsel",
+      "label": "parsel",
+      "layer": 2,
+      "weight": 26,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "pyasn1-modules",
+      "label": "pyasn1-modules",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "requests-file",
+      "label": "requests-file",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "zope-interface",
+      "label": "zope-interface",
+      "layer": 2,
+      "weight": 26,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "cffi",
+      "label": "cffi",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "cssselect",
+      "label": "cssselect",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "jmespath",
+      "label": "jmespath",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "lxml",
+      "label": "lxml",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "packaging",
+      "label": "packaging",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "pyasn1",
+      "label": "pyasn1",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "requests",
+      "label": "requests",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "tomli",
+      "label": "tomli",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "typing-extensions",
+      "label": "typing-extensions",
+      "layer": 3,
+      "weight": 42,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 4,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "w3lib",
+      "label": "w3lib",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "certifi",
+      "label": "certifi",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "charset-normalizer",
+      "label": "charset-normalizer",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "idna",
+      "label": "idna",
+      "layer": 4,
+      "weight": 26,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "pycparser",
+      "label": "pycparser",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    },
+    {
+      "id": "urllib3",
+      "label": "urllib3",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isRoot": false
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": "scrapy",
+      "target": "cryptography",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=37.0.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "cssselect",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=0.9.1"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "defusedxml",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.7.1"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "itemadapter",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=0.1.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "itemloaders",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.1"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "lxml",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=4.6.4"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "packaging",
+      "value": 0.3,
+      "restLength": 45,
+      "metadata": {}
+    },
+    {
+      "source": "scrapy",
+      "target": "parsel",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.5.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "protego",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.1.15"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "pydispatcher",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.0.5"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "pyopenssl",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=22.0.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "pypydispatcher",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.1.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "queuelib",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.4.2"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "service-identity",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=18.1.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "tldextract",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "scrapy",
+      "target": "twisted",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<=25.5.0,>=21.7.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "w3lib",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=1.17.0"
+      }
+    },
+    {
+      "source": "scrapy",
+      "target": "zope-interface",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=5.1.0"
+      }
+    },
+    {
+      "source": "cryptography",
+      "target": "cffi",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.14"
+      }
+    },
+    {
+      "source": "cryptography",
+      "target": "cffi",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.0.0"
+      }
+    },
+    {
+      "source": "cryptography",
+      "target": "typing-extensions",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.13.2"
+      }
+    },
+    {
+      "source": "itemloaders",
+      "target": "itemadapter",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.1.0"
+      }
+    },
+    {
+      "source": "itemloaders",
+      "target": "jmespath",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=0.9.5"
+      }
+    },
+    {
+      "source": "itemloaders",
+      "target": "parsel",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.5.0"
+      }
+    },
+    {
+      "source": "parsel",
+      "target": "cssselect",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.2.0"
+      }
+    },
+    {
+      "source": "parsel",
+      "target": "jmespath",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.0"
+      }
+    },
+    {
+      "source": "parsel",
+      "target": "lxml",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.1.0"
+      }
+    },
+    {
+      "source": "parsel",
+      "target": "packaging",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=23.0"
+      }
+    },
+    {
+      "source": "parsel",
+      "target": "w3lib",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.19.0"
+      }
+    },
+    {
+      "source": "pyopenssl",
+      "target": "cryptography",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<48,>=46.0.0"
+      }
+    },
+    {
+      "source": "pyopenssl",
+      "target": "typing-extensions",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=4.9"
+      }
+    },
+    {
+      "source": "service-identity",
+      "target": "attrs",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=19.1.0"
+      }
+    },
+    {
+      "source": "service-identity",
+      "target": "cryptography",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "service-identity",
+      "target": "pyasn1",
+      "value": 0.3,
+      "restLength": 30,
+      "metadata": {}
+    },
+    {
+      "source": "service-identity",
+      "target": "pyasn1-modules",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "tldextract",
+      "target": "idna",
+      "value": 0.3,
+      "restLength": 45,
+      "metadata": {}
+    },
+    {
+      "source": "tldextract",
+      "target": "requests",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=2.1.0"
+      }
+    },
+    {
+      "source": "tldextract",
+      "target": "requests-file",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.4"
+      }
+    },
+    {
+      "source": "tldextract",
+      "target": "filelock",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3.0.8"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "attrs",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=22.2.0"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "automat",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=24.8.0"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "constantly",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=15.1"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "hyperlink",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=17.1.1"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "incremental",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=24.7.0"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "typing-extensions",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=4.2.0"
+      }
+    },
+    {
+      "source": "twisted",
+      "target": "zope-interface",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5"
+      }
+    },
+    {
+      "source": "cffi",
+      "target": "pycparser",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "pyasn1-modules",
+      "target": "pyasn1",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<0.7.0,>=0.6.1"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "charset-normalizer",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<4,>=2"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "idna",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<4,>=2.5"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "urllib3",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<3,>=1.26"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "certifi",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2023.5.7"
+      }
+    },
+    {
+      "source": "requests-file",
+      "target": "requests",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.0"
+      }
+    },
+    {
+      "source": "automat",
+      "target": "typing-extensions",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "incremental",
+      "target": "tomli",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    }
+  ],
+  "layers": [
+    {
+      "index": 0,
+      "label": "depth 0 (root)"
+    },
+    {
+      "index": 1,
+      "label": "depth 1"
+    },
+    {
+      "index": 2,
+      "label": "depth 2"
+    },
+    {
+      "index": 3,
+      "label": "depth 3"
+    },
+    {
+      "index": 4,
+      "label": "depth 4"
+    }
+  ]
+}
