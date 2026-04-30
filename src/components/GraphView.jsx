@@ -32,8 +32,8 @@ export default function GraphView({
   resetViewTrigger,
 }) {
   const containerRef = useRef(null);
-  const graphRef     = useRef(null);
-  const linksRef     = useRef(null);
+  const graphRef = useRef(null);
+  const linksRef = useRef(null);
   const repulsionRef = useRef(null);
   const springRef = useRef(null);
   const configRef = useRef(config);
@@ -113,18 +113,18 @@ export default function GraphView({
           if (child.isMesh) child.castShadow = true;
         });
 
-        const s           = 0.5 + (node.weight || 10) / 50;
+        const s = 0.5 + (node.weight || 10) / 50;
         const outerRadius = 8.5 * s;
 
-        const sprite          = new SpriteText(node.label || node.id);
-        sprite.color          = '#e2e8f0';
-        sprite.textHeight     = Math.max(2.5, outerRadius * 0.25);
-        sprite.position.y     = outerRadius + 3;
-        sprite.fontFace       = 'DM Sans, sans-serif';
+        const sprite = new SpriteText(node.label || node.id);
+        sprite.color = '#e2e8f0';
+        sprite.textHeight = Math.max(2.5, outerRadius * 0.25);
+        sprite.position.y = outerRadius + 3;
+        sprite.fontFace = 'DM Sans, sans-serif';
         sprite.backgroundColor = isSelected
           ? 'rgba(15, 23, 42, 0.9)'
           : 'rgba(15, 23, 42, 0.7)';
-        sprite.padding      = isSelected ? 2.5 : 1.5;
+        sprite.padding = isSelected ? 2.5 : 1.5;
         sprite.borderRadius = 3;
         group.add(sprite);
 
@@ -172,7 +172,7 @@ export default function GraphView({
       })
       .onNodeDrag((node) => {
         if (node._layerZ !== undefined) {
-          node.z  = node._layerZ;
+          node.z = node._layerZ;
           node.fz = node._layerZ;
           node.vz = 0;
         }
@@ -181,7 +181,7 @@ export default function GraphView({
         node.fx = undefined;
         node.fy = undefined;
         if (node._layerZ !== undefined) {
-          node.z  = node._layerZ;
+          node.z = node._layerZ;
           node.fz = node._layerZ;
           node.vz = 0;
         }
@@ -204,21 +204,21 @@ export default function GraphView({
       });
 
     // ── Scene references ──
-    const scene    = graph.scene();
+    const scene = graph.scene();
     const renderer = graph.renderer();
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // ── Stage dimensions ──
     const stageWidth = 900;
     const stageDepth = Math.max(700, config.layerSpacing * 5);
-    const floorY     = -220;
-    const backWallZ  = -stageDepth / 2;
+    const floorY = -220;
+    const backWallZ = -stageDepth / 2;
 
     // ── Stage geometry constants (reused in forces + tick) ──
     const xLimit = stageWidth / 2 - 60;   // soft-wall x boundary (with margin)
-    const yMax   =  180;                   // ceiling
-    const yMin   = floorY + 30;            // just above floor
+    const yMax = 180;                   // ceiling
+    const yMin = floorY + 30;            // just above floor
 
     // ─── Floor ───────────────────────────────────────────────
     const floorGeometry = new THREE.PlaneGeometry(stageWidth, stageDepth);
@@ -256,14 +256,14 @@ export default function GraphView({
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.4);
     directionalLight.position.set(250, 500, 350);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width  = 2048;
+    directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.left   = -700;
-    directionalLight.shadow.camera.right  =  700;
-    directionalLight.shadow.camera.top    =  700;
+    directionalLight.shadow.camera.left = -700;
+    directionalLight.shadow.camera.right = 700;
+    directionalLight.shadow.camera.top = 700;
     directionalLight.shadow.camera.bottom = -700;
-    directionalLight.shadow.camera.near   = 1;
-    directionalLight.shadow.camera.far    = 1500;
+    directionalLight.shadow.camera.near = 1;
+    directionalLight.shadow.camera.far = 1500;
     scene.add(directionalLight);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -272,9 +272,9 @@ export default function GraphView({
     // ─── Shadow projections (floor + back wall + side wall) ──
     // One InstancedMesh per surface — updated every tick (no Z-fighting because
     // each mesh is parked at its surface with a tiny epsilon offset).
-    const nodeCount  = filteredGraphData.nodes.length;
-    const shadowGeo  = new THREE.CircleGeometry(6, 16);
-    const shadowMat  = new THREE.MeshBasicMaterial({
+    const nodeCount = filteredGraphData.nodes.length;
+    const shadowGeo = new THREE.CircleGeometry(6, 16);
+    const shadowMat = new THREE.MeshBasicMaterial({
       color: 0x000000, transparent: true, opacity: 0.30, depthWrite: false,
     });
 
@@ -302,7 +302,7 @@ export default function GraphView({
 
     // ── Disable all default d3 forces ──
     graph.d3Force('charge', null);
-    graph.d3Force('link',   null);
+    graph.d3Force('link', null);
     graph.d3Force('center', null);
 
     // ── Custom Force 1: Within-layer repulsion ──
@@ -330,10 +330,10 @@ export default function GraphView({
 
       return (alpha) => {
         for (const node of filteredGraphData.nodes) {
-          if (node.x >  xLimit) node.vx -= (node.x -  xLimit) * k * alpha;
+          if (node.x > xLimit) node.vx -= (node.x - xLimit) * k * alpha;
           if (node.x < -xLimit) node.vx += (-xLimit - node.x) * k * alpha;
-          if (node.y >  yMax)   node.vy -= (node.y -  yMax)   * k * alpha;
-          if (node.y <  yMin)   node.vy += (yMin   - node.y)  * k * alpha;
+          if (node.y > yMax) node.vy -= (node.y - yMax) * k * alpha;
+          if (node.y < yMin) node.vy += (yMin - node.y) * k * alpha;
         }
       };
     })();
@@ -343,15 +343,15 @@ export default function GraphView({
     graph.d3VelocityDecay(config.damping);
 
     // ── Initial node positions: random x/y (FREE), z locked to layer ──
-    const layers  = filteredGraphData.nodes.map((n) => n.layer !== undefined ? n.layer : 0);
+    const layers = filteredGraphData.nodes.map((n) => n.layer !== undefined ? n.layer : 0);
     const midLayer = (Math.min(...layers) + Math.max(...layers)) / 2;
 
     for (const node of filteredGraphData.nodes) {
       const exactZ = ((node.layer !== undefined ? node.layer : 0) - midLayer) * layerSpacing;
 
-      node.z       = exactZ;
-      node.fz      = exactZ;
-      node.vz      = 0;
+      node.z = exactZ;
+      node.fz = exactZ;
+      node.vz = 0;
       node._layerZ = exactZ;
 
       if (node.x === undefined) node.x = (Math.random() - 0.5) * 200;
@@ -363,12 +363,57 @@ export default function GraphView({
     for (const node of filteredGraphData.nodes) nodeById.set(node.id, node);
 
     const linkPairs = [];
+    const linkValues = [];
     for (const link of filteredGraphData.links) {
       const src = typeof link.source === 'object' ? link.source : nodeById.get(link.source);
       const tgt = typeof link.target === 'object' ? link.target : nodeById.get(link.target);
-      if (src && tgt) linkPairs.push(src, tgt);
+
+      if (src && tgt) {
+        linkPairs.push(src, tgt);
+        linkValues.push(Number(link.value ?? 1));
+      }
     }
 
+    const minLinkValue = Math.min(...linkValues);
+    const maxLinkValue = Math.max(...linkValues);
+
+    console.log('Link value range:', {
+      minLinkValue,
+      maxLinkValue,
+      sampleValues: linkValues.slice(0, 10),
+    });
+    // Normalizes a link value to [0, 1] based on the min/max in the dataset
+    const normalizeLinkValue = (value) => {
+      if (maxLinkValue === minLinkValue) return 1;
+      return (value - minLinkValue) / (maxLinkValue - minLinkValue);
+    };
+
+    const mapRange = (value, outMin, outMax) => {
+      return outMin + value * (outMax - outMin);
+    };
+
+    const getLinkWidth = (value) => {
+      const normalized = normalizeLinkValue(value);
+      return mapRange(normalized, 1, 5);
+    };
+
+    const getLinkOpacity = (value) => {
+      const normalized = normalizeLinkValue(value);
+      return mapRange(normalized, 0.15, 0.8);
+    };
+
+    const getLinkVisibility = (value, isActive, hasSelection) => {
+      const weightedOpacity = getLinkOpacity(value);
+
+      if (!hasSelection) return weightedOpacity;
+      if (isActive) return Math.max(weightedOpacity, 0.9);
+      return Math.min(weightedOpacity * 0.08, 0.06);
+    };
+    console.log('Mapped link values:', linkValues.slice(0, 10).map((value) => ({
+      value,
+      width: getLinkWidth(value),
+      opacity: getLinkOpacity(value),
+    })));
     const totalSegments = linkPairs.length / 2;
 
     // ── Feed data to graph ──
@@ -383,14 +428,22 @@ export default function GraphView({
     for (let s = 0; s < totalSegments; s++) {
       const src = linkPairs[s * 2];
       const tgt = linkPairs[s * 2 + 1];
+      const value = linkValues[s] ?? 1;
+
+      const opacity = getLinkVisibility(value, true, false);
+
+      const r = 0.4 * opacity;
+      const g = 0.6 * opacity;
+      const b = 1.0 * opacity;
+
       posArray[s * 6] = src.x; posArray[s * 6 + 1] = src.y; posArray[s * 6 + 2] = src.z;
       posArray[s * 6 + 3] = tgt.x; posArray[s * 6 + 4] = tgt.y; posArray[s * 6 + 5] = tgt.z;
-      colorArray[s * 6] = 0.4;
-      colorArray[s * 6 + 1] = 0.6;
-      colorArray[s * 6 + 2] = 1.0;
-      colorArray[s * 6 + 3] = 0.4;
-      colorArray[s * 6 + 4] = 0.6;
-      colorArray[s * 6 + 5] = 1.0;
+      colorArray[s * 6] = r;
+      colorArray[s * 6 + 1] = g;
+      colorArray[s * 6 + 2] = b;
+      colorArray[s * 6 + 3] = r;
+      colorArray[s * 6 + 4] = g;
+      colorArray[s * 6 + 5] = b;
     }
 
     const lineGeometry = new LineSegmentsGeometry();
@@ -420,15 +473,15 @@ export default function GraphView({
       for (const node of filteredGraphData.nodes) {
         // Belt-and-suspenders z-lock (catches any fp drift from fz)
         if (node._layerZ !== undefined) {
-          node.z  = node._layerZ;
+          node.z = node._layerZ;
           node.vz = 0;
         }
 
         // Hard x/y clamp — last line of defence after soft wall force
-        if (node.x >  xLimit) { node.x =  xLimit; node.vx = 0; }
+        if (node.x > xLimit) { node.x = xLimit; node.vx = 0; }
         if (node.x < -xLimit) { node.x = -xLimit; node.vx = 0; }
-        if (node.y >  yMax)   { node.y =  yMax;   node.vy = 0; }
-        if (node.y <  yMin)   { node.y =  yMin;   node.vy = 0; }
+        if (node.y > yMax) { node.y = yMax; node.vy = 0; }
+        if (node.y < yMin) { node.y = yMin; node.vy = 0; }
       }
 
       // Update link line positions
@@ -448,12 +501,16 @@ export default function GraphView({
         for (let s = 0; s < segs; s++) {
           const activeLinkIndices = highlightLinkIndicesRef.current;
 
-          const isActive =
-            activeLinkIndices.size === 0 || activeLinkIndices.has(s);
+          const hasSelection = activeLinkIndices.size > 0;
+          const isActive = !hasSelection || activeLinkIndices.has(s);
 
-          const r = isActive ? 0.2 : 0.02;
-          const g = isActive ? 0.9 : 0.02;
-          const b = isActive ? 1.0 : 0.02;
+          const value = linkValues[s];
+          const opacity = getLinkVisibility(value, isActive, hasSelection);
+
+          const base = opacity;
+          const r = 0.2 * base;
+          const g = 0.9 * base;
+          const b = 1.0 * base;
 
           color[s * 6] = r;
           color[s * 6 + 1] = g;
@@ -495,7 +552,7 @@ export default function GraphView({
         sideWallShadows.setMatrixAt(i, _dummy.matrix);
       });
 
-      floorShadows.instanceMatrix.needsUpdate    = true;
+      floorShadows.instanceMatrix.needsUpdate = true;
       backWallShadows.instanceMatrix.needsUpdate = true;
       sideWallShadows.instanceMatrix.needsUpdate = true;
     });
@@ -513,10 +570,10 @@ export default function GraphView({
       scene.remove(directionalLight, ambientLight);
       scene.remove(floorShadows, backWallShadows, sideWallShadows);
 
-      floorGeometry.dispose();    floorMaterial.dispose();
-      wallGeometry.dispose();     wallMaterial.dispose();
+      floorGeometry.dispose(); floorMaterial.dispose();
+      wallGeometry.dispose(); wallMaterial.dispose();
       sideWallGeometry.dispose(); sideWallMaterial.dispose();
-      shadowGeo.dispose();        shadowMat.dispose();
+      shadowGeo.dispose(); shadowMat.dispose();
 
       if (linksRef.current) {
         scene.remove(linksRef.current.lineSegments);
@@ -560,14 +617,14 @@ export default function GraphView({
     if (!graph) return;
 
     const nodes = graph.graphData().nodes;
-    const ls    = nodes.map((n) => (n.layer !== undefined ? n.layer : 0));
-    const mid   = (Math.min(...ls) + Math.max(...ls)) / 2;
+    const ls = nodes.map((n) => (n.layer !== undefined ? n.layer : 0));
+    const mid = (Math.min(...ls) + Math.max(...ls)) / 2;
 
     for (const node of nodes) {
       const exactZ = ((node.layer !== undefined ? node.layer : 0) - mid) * config.layerSpacing;
-      node.z       = exactZ;
-      node.fz      = exactZ;
-      node.vz      = 0;
+      node.z = exactZ;
+      node.fz = exactZ;
+      node.vz = 0;
       node._layerZ = exactZ;
     }
 
@@ -580,7 +637,7 @@ export default function GraphView({
     if (!graph) return;
     graph.cameraPosition(
       { x: 0, y: 80, z: 700 },
-      { x: 0, y: 0,  z: 0   },
+      { x: 0, y: 0, z: 0 },
       800
     );
   }, [resetViewTrigger, filteredGraphData]);
