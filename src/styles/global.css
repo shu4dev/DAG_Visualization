@@ -33,6 +33,16 @@
   --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
+  /* Benchmark HUD palette (referenced by .panel-tabs and .sb-* rules below) */
+  --sb-purple:   #818cf8;
+  --sb-blue:     #38bdf8;
+  --sb-teal:     #2dd4bf;
+  --sb-fps-idle: #475569;
+  --sb-fps-good: #34d399;
+  --sb-fps-ok:   #fbbf24;
+  --sb-fps-bad:  #fb923c;
+  --sb-fps-dead: #f87171;
+  --sb-mono:     var(--font-mono);
   /* Scene tokens — read by GraphView via getComputedStyle */
   --scene-bg: #1a2233;
   --scene-floor: #303946;
@@ -581,6 +591,282 @@ select:hover {
   left: 0;
 }
 
+/* ========================================
+   Benchmark HUD styles
+   ======================================== */
+
+/* ── Tab switcher (rendered by ControlPanel) ─────────────────────────── */
+ 
+.panel-tabs {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 12px;       /* keeps tabs separated from the bottom border */
+  border-bottom: 1px solid var(--border-subtle);
+}
+.panel-tab {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.panel-tab:hover {
+  background: var(--bg-panel-hover);
+  color: var(--text-primary);
+}
+.panel-tab.active {
+  background: color-mix(in srgb, var(--sb-purple) 18%, transparent);
+  border-color: color-mix(in srgb, var(--sb-purple) 45%, transparent);
+  color: var(--sb-purple);
+  font-weight: 600;
+}
+
+/* ── Tab-pane wrapper: gives sections inside the same gap as the rest of
+      the control panel (.control-panel uses gap: 20px between its flex
+      children — the wrappers below are block-level so their inner sections
+      need their own flex/gap). ─────────────────────────────────────────── */
+
+.panel-tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+ 
+/* ── Inline container (lives inside ControlPanel) ─────────────────────── */
+ 
+.sb-inline {
+  font-family: var(--sb-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+ 
+/* ── Metrics row ──────────────────────────────────────────────────────── */
+ 
+.sb-metrics-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.sb-metric-box {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;        /* recoloured by .sb-tier-* below */
+  border-radius: 6px;
+  padding: 6px 8px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+.sb-metric-label {
+  font-size: 9px;
+  color: #475569;
+  letter-spacing: 0.08em;
+  margin-bottom: 3px;
+}
+.sb-metric-value {
+  font-size: 17px;
+  font-weight: 700;
+}
+ 
+/* ── Tier modifiers (apply to .sb-metric-box, .sb-metric-value, table cells, hint legend) ── */
+ 
+.sb-tier-dim          { color: var(--sb-fps-idle); }
+.sb-metric-box.sb-tier-dim { border-color: transparent; }
+ 
+.sb-tier-idle         { color: var(--sb-fps-idle); }
+.sb-metric-box.sb-tier-idle { border-color: var(--sb-fps-idle); }
+ 
+.sb-tier-good         { color: var(--sb-fps-good); }
+.sb-metric-box.sb-tier-good { border-color: var(--sb-fps-good); }
+ 
+.sb-tier-ok           { color: var(--sb-fps-ok); }
+.sb-metric-box.sb-tier-ok   { border-color: var(--sb-fps-ok); }
+ 
+.sb-tier-bad          { color: var(--sb-fps-bad); }
+.sb-metric-box.sb-tier-bad  { border-color: var(--sb-fps-bad); }
+ 
+.sb-tier-dead         { color: var(--sb-fps-dead); }
+.sb-metric-box.sb-tier-dead { border-color: var(--sb-fps-dead); }
+ 
+.sb-tier-blue         { color: var(--sb-blue); }
+.sb-metric-box.sb-tier-blue { border-color: var(--sb-blue); }
+ 
+/* ── Auto-run progress ────────────────────────────────────────────────── */
+ 
+.sb-autorun-bar {
+  background: rgba(45, 212, 191, 0.08);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 10px;
+}
+.sb-autorun-label {
+  font-size: 10px;
+  color: var(--sb-teal);
+  letter-spacing: 0.04em;
+}
+ 
+/* ── Groups ───────────────────────────────────────────────────────────── */
+ 
+.sb-group         { margin-bottom: 12px; }
+.sb-group-label {
+  font-size: 9px;
+  color: #475569;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+ 
+/* ── Buttons (base + modifiers) ────────────────────────────────────────── */
+ 
+.sb-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: #94a3b8;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 10px;
+  font-family: var(--sb-mono);
+  margin-bottom: 3px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.sb-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+.sb-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+ 
+.sb-btn--run-all {
+  background: rgba(45, 212, 191, 0.15);
+  border-color: rgba(45, 212, 191, 0.4);
+  color: var(--sb-teal);
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 8px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+.sb-btn--run {
+  flex: 1;
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(129, 140, 248, 0.4);
+  color: var(--sb-purple);
+  font-weight: 600;
+  text-align: center;
+}
+.sb-btn--stop {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: var(--sb-fps-dead);
+  font-weight: 600;
+  padding: 4px 12px;
+  text-align: center;
+}
+.sb-btn--export {
+  flex: 1;
+  text-align: center;
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: var(--sb-blue);
+  font-weight: 600;
+  margin-bottom: 0;
+}
+ 
+.sb-btn-row     { display: flex; gap: 6px; margin-top: 8px; }
+.sb-export-row  { display: flex; gap: 6px; margin-bottom: 6px; }
+ 
+/* ── Notice toast ─────────────────────────────────────────────────────── */
+ 
+.sb-notice {
+  font-size: 10px;
+  color: var(--sb-teal);
+  margin-bottom: 6px;
+  text-align: center;
+  background: rgba(45, 212, 191, 0.08);
+  border-radius: 4px;
+  padding: 3px 6px;
+}
+ 
+/* ── Slider ───────────────────────────────────────────────────────────── */
+ 
+.sb-slider-row   { margin-bottom: 6px; }
+.sb-slider-label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; }
+.sb-slider {
+  width: 100%;
+  accent-color: var(--sb-purple);
+  cursor: pointer;
+}
+ 
+/* ── Results table ────────────────────────────────────────────────────── */
+ 
+.sb-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.sb-clear-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  font-size: 10px;
+  font-family: var(--sb-mono);
+  padding: 0;
+}
+.sb-clear-btn:hover { color: #cbd5e1; }
+ 
+.sb-table-wrap { overflow-x: auto; }
+.sb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.sb-table th {
+  text-align: left;
+  color: #475569;
+  padding-bottom: 4px;
+  padding-right: 6px;
+  white-space: nowrap;
+}
+.sb-table tr {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.sb-table td {
+  padding: 3px 6px 3px 0;
+  white-space: nowrap;
+}
+.sb-cell--scenario {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sb-cell--fps   { font-weight: 600; }
+ 
+/* ── Hint legend ──────────────────────────────────────────────────────── */
+ 
+.sb-hint {
+  margin-top: 8px;
+  font-size: 9px;
+  color: #334155;
+  line-height: 1.6;
+}
 /* ---- Error banner ---- */
 .error-banner {
   position: absolute;
