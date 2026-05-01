@@ -41,6 +41,10 @@ export default function GraphView({
   const highlightNodeIdsRef = useRef(new Set());
   const highlightLinkIndicesRef = useRef(new Set());
 
+  // Layer planes (one translucent disc per distinct _layerZ)
+  const layerPlanesRef = useRef([]);
+  const rebuildLayerPlanesRef = useRef(null);
+
   // Shared with FlyCamera — when true, click handlers are skipped
   const flyActiveRef = useRef(false);
   const layerSpacing = config.layerSpacing;
@@ -358,6 +362,85 @@ export default function GraphView({
       if (node.y === undefined) node.y = (Math.random() - 0.5) * 200;
     }
 
+    // ─── Layer planes ────────────────────────────────────────────────────
+    // One thin translucent rectangle per distinct _layerZ, sized to the full
+    // stage soft-wall bounds so it reaches the furthest possible node from
+    // the moment it loads (no waiting for the simulation to settle).
+    // Rebuilt on dataset change and on layer-spacing change.
+    // `depthWrite: false` + `renderOrder: -1` keeps lower planes visible
+    // through upper ones and lets the additive-blended link lines show
+    // through every plane.
+    function rebuildLayerPlanes() {
+      // Tear down old planes
+      for (const item of layerPlanesRef.current) {
+        scene.remove(item.plane);
+        scene.remove(item.edges);
+        item.plane.geometry.dispose();
+        item.plane.material.dispose();
+        item.edges.geometry.dispose();
+        item.edges.material.dispose();
+      }
+      layerPlanesRef.current = [];
+
+      // Group nodes by _layerZ — one plane per distinct value
+      const layerGroups = new Map();
+      for (const node of filteredGraphData.nodes) {
+        const z = node._layerZ;
+        if (z === undefined) continue;
+        if (!layerGroups.has(z)) layerGroups.set(z, []);
+        layerGroups.get(z).push(node);
+      }
+
+      // Plane size = stage soft-wall bounds + small padding so the plane
+      // reaches the furthest possible node position from the moment it
+      // appears.  This avoids the "plane is a tiny square until physics
+      // settles" effect on JSON load.  All layers share the same footprint,
+      // matching the "physical floors of a building" metaphor.
+      const padding = 40;
+      const planeWidth  = (xLimit * 2) + padding * 2;
+      const planeHeight = (yMax - yMin) + padding * 2;
+      const planeCY     = (yMax + yMin) / 2;        // centre vertically between yMin and yMax
+      const visible = configRef.current.showLayerPlanes !== false;
+
+      for (const [z] of layerGroups) {
+        // Plane mesh — flat in XY, normal along Z (matches layer orientation)
+        const planeGeo = new THREE.PlaneGeometry(planeWidth, planeHeight);
+        const planeMat = new THREE.MeshStandardMaterial({
+          color:       0x60a5fa,            // matches link tint
+          transparent: true,
+          opacity:     0.10,
+          depthWrite:  false,                // lower planes & links show through
+          side:        THREE.DoubleSide,     // visible from above and below
+          roughness:   0.9,
+          metalness:   0.0,
+        });
+        const plane = new THREE.Mesh(planeGeo, planeMat);
+        plane.position.set(0, planeCY, z);
+        plane.receiveShadow = true;          // nodes drop shadows onto plane
+        plane.renderOrder   = -1;            // draw before nodes/links
+        plane.visible       = visible;
+        scene.add(plane);
+
+        // Subtle border ring for legibility
+        const edgesGeo = new THREE.EdgesGeometry(planeGeo);
+        const edgesMat = new THREE.LineBasicMaterial({
+          color:       0x60a5fa,
+          transparent: true,
+          opacity:     0.35,
+          depthWrite:  false,
+        });
+        const edges = new THREE.LineSegments(edgesGeo, edgesMat);
+        edges.position.copy(plane.position);
+        edges.renderOrder = -1;
+        edges.visible     = visible;
+        scene.add(edges);
+
+        layerPlanesRef.current.push({ plane, edges, z });
+      }
+    }
+    rebuildLayerPlanesRef.current = rebuildLayerPlanes;
+    rebuildLayerPlanes(); // initial build — uses stage bounds, so it's already at full size
+
     // ── Resolve link node references for line drawing ──
     const nodeById = new Map();
     for (const node of filteredGraphData.nodes) nodeById.set(node.id, node);
@@ -575,6 +658,18 @@ export default function GraphView({
       sideWallGeometry.dispose(); sideWallMaterial.dispose();
       shadowGeo.dispose(); shadowMat.dispose();
 
+      // Dispose layer planes
+      for (const item of layerPlanesRef.current) {
+        scene.remove(item.plane);
+        scene.remove(item.edges);
+        item.plane.geometry.dispose();
+        item.plane.material.dispose();
+        item.edges.geometry.dispose();
+        item.edges.material.dispose();
+      }
+      layerPlanesRef.current = [];
+      rebuildLayerPlanesRef.current = null;
+
       if (linksRef.current) {
         scene.remove(linksRef.current.lineSegments);
         linksRef.current.lineGeometry.dispose();
@@ -628,8 +723,20 @@ export default function GraphView({
       node._layerZ = exactZ;
     }
 
+    // Snap planes to new Z immediately (don't wait for simulation to re-settle)
+    rebuildLayerPlanesRef.current?.();
+
     graph.d3ReheatSimulation();
   }, [config.layerSpacing]);
+
+  // ── Toggle layer-plane visibility ──
+  useEffect(() => {
+    const visible = config.showLayerPlanes !== false; // default ON
+    for (const item of layerPlanesRef.current) {
+      item.plane.visible = visible;
+      item.edges.visible = visible;
+    }
+  }, [config.showLayerPlanes]);
 
   // ── Reset view ──
   useEffect(() => {

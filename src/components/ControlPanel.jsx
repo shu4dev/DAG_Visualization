@@ -60,7 +60,7 @@ export default function ControlPanel({
             FPS/memory/convergence even while you're on the Controls tab.
             The inactive pane is just hidden with `display: none`.
           */}
-          <div style={{ display: tab === 'controls' ? 'block' : 'none' }}>
+          <div className="panel-tab-pane" style={{ display: tab === 'controls' ? 'flex' : 'none' }}>
               {/* Data Source */}
               <div className="panel-section">
                 <h2>Data Source</h2>
@@ -200,6 +200,17 @@ export default function ControlPanel({
                     onChange={(e) => updateConfig('layerSpacing', Number(e.target.value))}
                   />
                 </div>
+
+                <div className="toggle-control">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={config.showLayerPlanes !== false}
+                      onChange={(e) => updateConfig('showLayerPlanes', e.target.checked)}
+                    />
+                    Show Layer Planes
+                  </label>
+                </div>
               </div>
 
               {/* View Controls */}
@@ -226,7 +237,7 @@ export default function ControlPanel({
             tab a compact "live mini-bar" surfaces from inside it via fixed
             positioning so you can see FPS/MEM/CONV without leaving Controls.
           */}
-          <div style={{ display: tab === 'bench' ? 'block' : 'none' }}>
+          <div className="panel-tab-pane" style={{ display: tab === 'bench' ? 'flex' : 'none' }}>
             <StressBench onLoadGraph={onLoadGraph} showMiniBar={tab !== 'bench'} />
           </div>
           {/*

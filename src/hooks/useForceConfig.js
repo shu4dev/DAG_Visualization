@@ -24,6 +24,9 @@ export function useForceConfig() {
     // Z-axis spacing between layers (visual only, no physics impact)
     layerSpacing: 120,
 
+    // Toggle: render translucent floor plates at each layer's Z (visual only)
+    showLayerPlanes: true,
+
   });
 
   const updateConfig = useCallback((key, value) => {
