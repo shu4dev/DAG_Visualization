@@ -18,6 +18,8 @@ export default function ControlPanel({
   onFileUpload,
   onResetView,
   onLoadGraph,            // ← new: passed straight to StressBench
+  theme,
+  onToggleTheme,
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [tab, setTab] = useState('controls'); // 'controls' | 'bench'
@@ -28,6 +30,16 @@ export default function ControlPanel({
       <div className="panel-header">
         {!collapsed && <h1>DAG Explorer</h1>}
         {!collapsed && <span className="badge">3D</span>}
+        {!collapsed && (
+          <button
+            className="theme-toggle"
+            onClick={onToggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label="Toggle color theme"
+          >
+            {theme === 'dark' ? '☀' : '☾'}
+          </button>
+        )}
         <button
           className="panel-toggle"
           onClick={() => setCollapsed(c => !c)}

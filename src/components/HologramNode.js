@@ -13,10 +13,22 @@ export function createHologramNode(node) {
   const w = node.weight || 10;
   // Scale factor: weight 10 → ~0.7x, weight 170 → ~3.9x
   const s = 0.5 + (w / 50);
-  const color = new THREE.Color(node.color || '#3b82f6');
+  const baseColor = new THREE.Color(node.color || '#3b82f6');
   const isSimplified = Boolean(node.simplifiedMode);
   const isSelected = node.isSelected;
   const isDimmed = node.isDimmed;
+  const isLight = node.theme === 'light';
+
+  // In light mode, the additive glow that dark nodes rely on disappears,
+  // so nudge saturation up just enough to compensate — without darkening,
+  // which made nodes feel heavy on the pale stage.
+  const color = isLight
+    ? baseColor.clone().offsetHSL(0, 0.08, -0.05)
+    : baseColor;
+  const trailBlending = isLight
+    ? THREE.NormalBlending
+    : THREE.AdditiveBlending;
+  const haloBlending = trailBlending;
 
   if (isSimplified) {
     const simpleGeometry = new THREE.SphereGeometry(3 * s, 8, 8);
@@ -46,11 +58,12 @@ export function createHologramNode(node) {
 
   // 1. Plasma Core (emissive glowing center)
   const coreGeometry = new THREE.SphereGeometry(3 * s, 32, 32); //(3 * s, 32, 32)
+  // Light mode: lean on the base color (no glowy whitewash) for visible contrast.
   const coreMaterial = new THREE.MeshStandardMaterial({
-    color: color.clone().offsetHSL(0, 0, 0.3),
+    color: isLight ? color : color.clone().offsetHSL(0, 0, 0.3),
     emissive: color,
     emissiveIntensity: 2,
-    roughness: 0.8,
+    roughness: isLight ? 0.6 : 0.8,
   });
   let coreIntensity = 1.0;
   let beltOpacity = 0.35;
@@ -68,6 +81,10 @@ export function createHologramNode(node) {
     trailOpacity = 0.03;
     haloOpacity = 0.0;
   }
+
+  // In light mode, additive emissive light disappears against the bright bg.
+  // Drop emissive intensity so the (now darker) base color provides contrast.
+  if (isLight) coreIntensity *= 0.15;
 
   coreMaterial.emissiveIntensity = coreIntensity;
 
@@ -99,10 +116,12 @@ export function createHologramNode(node) {
 
   // 3. High-Energy Orbital Trails
   const trailMaterial = new THREE.MeshBasicMaterial({
-    color: color.clone().offsetHSL(0, -0.3, 0.4),
+    // In light mode, keep the color saturated; the lightness boost only
+    // makes sense when the trail is glowing additively over a dark scene.
+    color: isLight ? color : color.clone().offsetHSL(0, -0.3, 0.4),
     transparent: true,
-    opacity: trailOpacity,
-    blending: THREE.AdditiveBlending,
+    opacity: isLight ? Math.min(1, trailOpacity * 4) : trailOpacity,
+    blending: trailBlending,
   });
 
   const trail1Geo = new THREE.TorusGeometry(8 * s, 0.05 * s, 8, 64);
@@ -122,8 +141,10 @@ export function createHologramNode(node) {
   const haloMaterial = new THREE.MeshBasicMaterial({
     color: color,
     transparent: true,
-    opacity: haloOpacity,
-    blending: THREE.AdditiveBlending,
+    // Additive halo is invisible on light bg; bump opacity when normal-blended
+    // so the atmosphere stays readable.
+    opacity: isLight ? Math.min(1, haloOpacity * 6) : haloOpacity,
+    blending: haloBlending,
     depthWrite: false,
   });
   group.add(new THREE.Mesh(haloGeometry, haloMaterial));

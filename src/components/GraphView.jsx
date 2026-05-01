@@ -10,6 +10,24 @@ import { forceWithinLayerRepulsion, forceCrossLayerSpring } from '../utils/force
 import { createHologramNode } from './HologramNode';
 import FlyCamera from './Flycamera';
 
+// Read scene-color CSS variables — single source of truth for both themes.
+const readSceneColors = () => {
+  const cs = getComputedStyle(document.documentElement);
+  const get = (name) => cs.getPropertyValue(name).trim();
+  return {
+    bg: get('--scene-bg'),
+    floor: get('--scene-floor'),
+    backWall: get('--scene-back-wall'),
+    sideWall: get('--scene-side-wall'),
+    link: get('--scene-link'),
+    shadow: get('--scene-shadow'),
+    shadowOpacity: parseFloat(get('--scene-shadow-opacity')) || 0.3,
+    spriteText: get('--scene-sprite-text'),
+    spriteBg: get('--scene-sprite-bg'),
+    spriteBgDim: get('--scene-sprite-bg-dim'),
+  };
+};
+
 /**
  * GraphView Component
  *
@@ -30,6 +48,7 @@ export default function GraphView({
   onNodeSelect,
   selectedNode,
   resetViewTrigger,
+  theme,
 }) {
   const containerRef = useRef(null);
   const graphRef = useRef(null);
@@ -44,6 +63,14 @@ export default function GraphView({
   // Layer planes (one translucent disc per distinct _layerZ)
   const layerPlanesRef = useRef([]);
   const rebuildLayerPlanesRef = useRef(null);
+  const floorMatRef = useRef(null);
+  const backWallMatRef = useRef(null);
+  const sideWallMatRef = useRef(null);
+  const shadowMatRef = useRef(null);
+  // Map<nodeId, SpriteText> — re-renders overwrite the entry, no stale refs.
+  const spritesRef = useRef(new Map());
+  // Mirror of theme prop so the nodeThreeObject closure sees fresh values.
+  const themeRef = useRef(theme);
 
   // Shared with FlyCamera — when true, click handlers are skipped
   const flyActiveRef = useRef(false);
@@ -99,8 +126,11 @@ export default function GraphView({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    spritesRef.current = new Map();
+    const initialColors = readSceneColors();
+
     const graph = ForceGraph3D()(containerRef.current)
-      .backgroundColor('#1a2233')
+      .backgroundColor(initialColors.bg)
       .showNavInfo(false)
       .linkOpacity(0) // we'll draw custom lines, so hide the built-in ones
 
@@ -111,7 +141,12 @@ export default function GraphView({
         const highlightSet = highlightNodeIdsRef.current;
         const isDimmed = highlightSet.size > 0 && !highlightSet.has(node.id);
 
-        const group = createHologramNode({ ...node, isSelected, isDimmed });
+        const group = createHologramNode({
+          ...node,
+          isSelected,
+          isDimmed,
+          theme: themeRef.current,
+        });
 
         group.traverse((child) => {
           if (child.isMesh) child.castShadow = true;
@@ -120,16 +155,19 @@ export default function GraphView({
         const s = 0.5 + (node.weight || 10) / 50;
         const outerRadius = 8.5 * s;
 
+        const spriteColors = readSceneColors();
         const sprite = new SpriteText(node.label || node.id);
-        sprite.color = '#e2e8f0';
+        sprite.color = spriteColors.spriteText;
         sprite.textHeight = Math.max(2.5, outerRadius * 0.25);
         sprite.position.y = outerRadius + 3;
         sprite.fontFace = 'DM Sans, sans-serif';
         sprite.backgroundColor = isSelected
-          ? 'rgba(15, 23, 42, 0.9)'
-          : 'rgba(15, 23, 42, 0.7)';
+          ? spriteColors.spriteBg
+          : spriteColors.spriteBgDim;
         sprite.padding = isSelected ? 2.5 : 1.5;
         sprite.borderRadius = 3;
+        sprite.userData.selected = isSelected;
+        spritesRef.current.set(node.id, sprite);
         group.add(sprite);
 
 
@@ -227,8 +265,9 @@ export default function GraphView({
     // ─── Floor ───────────────────────────────────────────────
     const floorGeometry = new THREE.PlaneGeometry(stageWidth, stageDepth);
     const floorMaterial = new THREE.MeshStandardMaterial({
-      color: '#303946', roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide,
+      color: initialColors.floor, roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide,
     });
+    floorMatRef.current = floorMaterial;
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, floorY, 0);
@@ -238,8 +277,9 @@ export default function GraphView({
     // ─── Back wall ───────────────────────────────────────────
     const wallGeometry = new THREE.PlaneGeometry(stageWidth, 520);
     const wallMaterial = new THREE.MeshStandardMaterial({
-      color: '#202938', roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
+      color: initialColors.backWall, roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
     });
+    backWallMatRef.current = wallMaterial;
     const backWall = new THREE.Mesh(wallGeometry, wallMaterial);
     backWall.position.set(0, floorY + 260, backWallZ);
     backWall.receiveShadow = true;
@@ -248,8 +288,9 @@ export default function GraphView({
     // ─── Side wall (completes the stage corner, per the paper) ──
     const sideWallGeometry = new THREE.PlaneGeometry(stageDepth, 520);
     const sideWallMaterial = new THREE.MeshStandardMaterial({
-      color: '#1e2a38', roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
+      color: initialColors.sideWall, roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
     });
+    sideWallMatRef.current = sideWallMaterial;
     const sideWall = new THREE.Mesh(sideWallGeometry, sideWallMaterial);
     sideWall.rotation.y = Math.PI / 2;
     sideWall.position.set(-(stageWidth / 2), floorY + 260, 0);
@@ -279,8 +320,12 @@ export default function GraphView({
     const nodeCount = filteredGraphData.nodes.length;
     const shadowGeo = new THREE.CircleGeometry(6, 16);
     const shadowMat = new THREE.MeshBasicMaterial({
-      color: 0x000000, transparent: true, opacity: 0.30, depthWrite: false,
+      color: initialColors.shadow,
+      transparent: true,
+      opacity: initialColors.shadowOpacity,
+      depthWrite: false,
     });
+    shadowMatRef.current = shadowMat;
 
     // Floor shadows  — lie flat on the floor (circle already in XY, rotate to XZ)
     const floorShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
@@ -515,18 +560,16 @@ export default function GraphView({
 
       const opacity = getLinkVisibility(value, true, false);
 
-      const r = 0.4 * opacity;
-      const g = 0.6 * opacity;
-      const b = 1.0 * opacity;
-
+      // Grayscale vertex colors (r=g=b=opacity). LineMaterial.color drives hue,
+      // so theme changes can recolor links without rewriting per-vertex data.
       posArray[s * 6] = src.x; posArray[s * 6 + 1] = src.y; posArray[s * 6 + 2] = src.z;
       posArray[s * 6 + 3] = tgt.x; posArray[s * 6 + 4] = tgt.y; posArray[s * 6 + 5] = tgt.z;
-      colorArray[s * 6] = r;
-      colorArray[s * 6 + 1] = g;
-      colorArray[s * 6 + 2] = b;
-      colorArray[s * 6 + 3] = r;
-      colorArray[s * 6 + 4] = g;
-      colorArray[s * 6 + 5] = b;
+      colorArray[s * 6] = opacity;
+      colorArray[s * 6 + 1] = opacity;
+      colorArray[s * 6 + 2] = opacity;
+      colorArray[s * 6 + 3] = opacity;
+      colorArray[s * 6 + 4] = opacity;
+      colorArray[s * 6 + 5] = opacity;
     }
 
     const lineGeometry = new LineSegmentsGeometry();
@@ -537,12 +580,13 @@ export default function GraphView({
     renderer.getSize(size);
 
     const lineMaterial = new LineMaterial({
-      color: 0x60a5fa,
+      color: initialColors.link,
       transparent: true,
       opacity: 0.9,
       linewidth: 4,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      // AdditiveBlending pops on dark bg but vanishes on light — switch per theme.
+      blending: theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending,
       resolution: size,
       vertexColors: true,
     });
@@ -590,17 +634,13 @@ export default function GraphView({
           const value = linkValues[s];
           const opacity = getLinkVisibility(value, isActive, hasSelection);
 
-          const base = opacity;
-          const r = 0.2 * base;
-          const g = 0.9 * base;
-          const b = 1.0 * base;
-
-          color[s * 6] = r;
-          color[s * 6 + 1] = g;
-          color[s * 6 + 2] = b;
-          color[s * 6 + 3] = r;
-          color[s * 6 + 4] = g;
-          color[s * 6 + 5] = b;
+          // Grayscale per-vertex (opacity-only) — LineMaterial.color drives hue.
+          color[s * 6] = opacity;
+          color[s * 6 + 1] = opacity;
+          color[s * 6 + 2] = opacity;
+          color[s * 6 + 3] = opacity;
+          color[s * 6 + 4] = opacity;
+          color[s * 6 + 5] = opacity;
         }
 
         linksRef.current.lineGeometry.setColors(color);
@@ -680,6 +720,42 @@ export default function GraphView({
       graph._destructor && graph._destructor();
     };
   }, [filteredGraphData, onNodeSelect]);
+
+  // ── Theme change: mutate scene materials in place (no scene rebuild) ──
+  useEffect(() => {
+    themeRef.current = theme;
+    const graph = graphRef.current;
+    if (!graph) return;
+
+    const c = readSceneColors();
+    graph.backgroundColor(c.bg);
+    floorMatRef.current?.color.set(c.floor);
+    backWallMatRef.current?.color.set(c.backWall);
+    sideWallMatRef.current?.color.set(c.sideWall);
+    if (shadowMatRef.current) {
+      shadowMatRef.current.color.set(c.shadow);
+      shadowMatRef.current.opacity = c.shadowOpacity;
+    }
+    if (linksRef.current?.lineMaterial) {
+      linksRef.current.lineMaterial.color.set(c.link);
+      linksRef.current.lineMaterial.blending =
+        theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending;
+      linksRef.current.lineMaterial.needsUpdate = true;
+    }
+    spritesRef.current.forEach((sprite) => {
+      sprite.color = c.spriteText;
+      sprite.backgroundColor = sprite.userData.selected
+        ? c.spriteBg
+        : c.spriteBgDim;
+      // Force the sprite's internal canvas to redraw with the new colors.
+      if (sprite.material?.map) sprite.material.map.needsUpdate = true;
+    });
+
+    // Force every node to be rebuilt by createHologramNode so it picks up
+    // the new theme (different blending modes / emissive intensity / hue).
+    graph.nodeThreeObject(graph.nodeThreeObject());
+    graph.refresh();
+  }, [theme]);
 
   // ── Update forces when physics config changes ──
   useEffect(() => {

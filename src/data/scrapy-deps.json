@@ -401,7 +401,7 @@
       "label": "certifi",
       "layer": 4,
       "weight": 18,
-      "color": "#10b981",
+      "color": "#34d399",
       "metadata": {
         "version": null,
         "inDegree": 1,
@@ -413,7 +413,7 @@
       "label": "charset-normalizer",
       "layer": 4,
       "weight": 18,
-      "color": "#10b981",
+      "color": "#34d399",
       "metadata": {
         "version": null,
         "inDegree": 1,
@@ -425,7 +425,7 @@
       "label": "idna",
       "layer": 4,
       "weight": 26,
-      "color": "#10b981",
+      "color": "#34d399",
       "metadata": {
         "version": null,
         "inDegree": 2,
@@ -437,7 +437,7 @@
       "label": "pycparser",
       "layer": 4,
       "weight": 18,
-      "color": "#10b981",
+      "color": "#34d399",
       "metadata": {
         "version": null,
         "inDegree": 1,
@@ -449,7 +449,7 @@
       "label": "urllib3",
       "layer": 4,
       "weight": 18,
-      "color": "#10b981",
+      "color": "#34d399",
       "metadata": {
         "version": null,
         "inDegree": 1,

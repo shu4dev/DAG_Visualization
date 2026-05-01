@@ -12,7 +12,7 @@ export const LAYER_COLORS = [
   '#06b6d4', // cyan
   '#8b5cf6', // violet
   '#f59e0b', // amber
-  '#10b981', // emerald
+  '#34d399', // emerald
   '#f43f5e', // rose
   '#6366f1', // indigo
   '#ec4899', // pink
