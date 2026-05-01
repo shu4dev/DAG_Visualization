@@ -3,6 +3,7 @@ import GraphView from './components/GraphView';
 import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
 import { useForceConfig } from './hooks/useForceConfig';
+import { useTheme } from './hooks/useTheme';
 import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/sampleData';
 import scrapyDeps from './data/scrapy-deps.json';
 
@@ -19,6 +20,7 @@ export default function App() {
   const [resetViewTrigger, setResetViewTrigger] = useState(0);
 
   const { config, updateConfig } = useForceConfig();
+  const [theme, toggleTheme] = useTheme();
 
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
@@ -155,31 +157,14 @@ export default function App() {
           onNodeSelect={setSelectedNode}
           selectedNode={selectedNode}
           resetViewTrigger={resetViewTrigger}
+          theme={theme}
         />
 
         {/* Selected node info overlay */}
         <NodeInfo node={selectedNode} />
 
         {/* Error banner */}
-        {error && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 16,
-              right: 340,
-              background: '#451a22',
-              color: '#fca5a5',
-              padding: '10px 16px',
-              borderRadius: 8,
-              fontSize: 13,
-              fontFamily: 'var(--font-mono)',
-              border: '1px solid #7f1d1d',
-              zIndex: 20,
-            }}
-          >
-            {error}
-          </div>
-        )}
+        {error && <div className="error-banner">{error}</div>}
       </div>
 
       {/* Side Panel */}
@@ -190,6 +175,8 @@ export default function App() {
         onLoadFromAPI={handleLoadFromAPI}
         onFileUpload={handleFileUpload}
         onResetView={handleResetView}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
     </div>
   );

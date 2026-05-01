@@ -13,6 +13,8 @@ export default function ControlPanel({
   onLoadFromAPI,
   onFileUpload,
   onResetView,
+  theme,
+  onToggleTheme,
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -22,6 +24,16 @@ export default function ControlPanel({
       <div className="panel-header">
         {!collapsed && <h1>DAG Explorer</h1>}
         {!collapsed && <span className="badge">3D</span>}
+        {!collapsed && (
+          <button
+            className="theme-toggle"
+            onClick={onToggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label="Toggle color theme"
+          >
+            {theme === 'dark' ? '☀' : '☾'}
+          </button>
+        )}
         <button
           className="panel-toggle"
           onClick={() => setCollapsed(c => !c)}
