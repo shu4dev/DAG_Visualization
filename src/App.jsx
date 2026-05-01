@@ -4,7 +4,8 @@ import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
 import { useForceConfig } from './hooks/useForceConfig';
 import { useTheme } from './hooks/useTheme';
-import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/sampleData';
+import { parseAnyGraphInput } from './data/sampleData';
+import scrapyDeps from './data/scrapy-deps.json';
 
 /**
  * App Component
@@ -13,7 +14,7 @@ import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/s
  * Manages graph data state, force configuration, and data loading.
  */
 export default function App() {
-  const [graphData, setGraphData] = useState(() => generateSampleData());
+  const [graphData, setGraphData] = useState(() => parseAnyGraphInput(scrapyDeps));
   const [selectedNode, setSelectedNode] = useState(null);
   const [error, setError] = useState(null);
   const [resetViewTrigger, setResetViewTrigger] = useState(0);
@@ -24,30 +25,10 @@ export default function App() {
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
     setError(null);
-    const data = generateSampleData();
+    const data = parseAnyGraphInput(scrapyDeps);
     setGraphData(data);
     setSelectedNode(null);
   }, []);
- 
-  // Load data from an API endpoint
-  const handleLoadFromAPI = useCallback(async (url) => {
-    setError(null)
-    try {
-      const data = await fetchGraphData(url)
-      if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.links)) {
-        throw new Error('Invalid graph format: missing nodes or links')
-      }
- 
-      if (data.nodes.length === 0) {
-        throw new Error('Invalid graph format: nodes cannot be empty')
-      }
-      setGraphData(data)
-      setSelectedNode(null)
-    } catch (err) {
-      setError(`Failed to fetch: ${err.message}`)
-      console.error(err)
-    }
-  }, [])
  
   // Load data from an uploaded JSON file
   const handleFileUpload = useCallback((file) => {
@@ -171,10 +152,8 @@ export default function App() {
         config={config}
         updateConfig={updateConfig}
         onLoadSample={handleLoadSample}
-        onLoadFromAPI={handleLoadFromAPI}
         onFileUpload={handleFileUpload}
         onResetView={handleResetView}
-        onLoadGraph={setGraphData}
         theme={theme}
         onToggleTheme={toggleTheme}
       />

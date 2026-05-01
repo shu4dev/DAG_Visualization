@@ -10,6 +10,10 @@ import { forceWithinLayerRepulsion, forceCrossLayerSpring } from '../utils/force
 import { createHologramNode } from './HologramNode';
 import FlyCamera from './Flycamera';
 
+// Accept "#rrggbb" or "rrggbb" — null otherwise.
+const HEX_RE = /^#?[0-9a-fA-F]{6}$/;
+const normalizeHex = (s) => (HEX_RE.test(s) ? (s.startsWith('#') ? s : '#' + s) : null);
+
 // Read scene-color CSS variables — single source of truth for both themes.
 const readSceneColors = () => {
   const cs = getComputedStyle(document.documentElement);
@@ -74,6 +78,19 @@ export default function GraphView({
 
   // Shared with FlyCamera — when true, click handlers are skipped
   const flyActiveRef = useRef(false);
+  // Wraps all graph-only contents (nodes, links, layer planes) so drag rotates
+  // them while the floor/walls stay pinned in world space.
+  const graphGroupRef = useRef(null);
+  // Tracks the currently-hovered node so background-drag rotates the graph
+  // instead of fighting the library's node-drag handler.
+  const hoveredNodeRef = useRef(null);
+  // Resizes floor / back wall / side wall to fit (numLayers - 1) * layerSpacing
+  // when the spacing slider changes — so layers don't poke through the back wall.
+  const resizeStageRef = useRef(null);
+  // Reparents library-created node visuals into graphGroup. Needed after every
+  // graph.refresh() (theme toggle, click highlights), since refresh rebuilds
+  // each node's __threeObj and the library re-adds them to the scene root.
+  const reparentNodesRef = useRef(null);
   const layerSpacing = config.layerSpacing;
 
   const [highlightNodeIds, setHighlightNodeIds] = useState(new Set());
@@ -203,6 +220,7 @@ export default function GraphView({
         // Force re-render of all nodes to update highlight states
         graph.nodeThreeObject(graph.nodeThreeObject());
         graph.refresh();
+        reparentNodesRef.current?.();
 
         const distance = 200;
         const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
@@ -229,6 +247,9 @@ export default function GraphView({
         }
         graph.d3ReheatSimulation();
       })
+      .onNodeHover((node) => {
+        hoveredNodeRef.current = node;
+      })
       .onBackgroundClick(() => {
         if (flyActiveRef.current) return; // fly mode owns clicks
 
@@ -241,6 +262,7 @@ export default function GraphView({
         // Force re-render of all nodes to clear highlights
         graph.nodeThreeObject(graph.nodeThreeObject());
         graph.refresh();
+        reparentNodesRef.current?.();
 
         if (onNodeSelect) onNodeSelect(null);
       });
@@ -251,18 +273,96 @@ export default function GraphView({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // ── Stage dimensions ──
-    const stageWidth = 900;
-    const stageDepth = Math.max(700, config.layerSpacing * 5);
-    const floorY = -220;
-    const backWallZ = -stageDepth / 2;
+    // ── Graph-only group (rotated by mouse drag; walls/floor stay at scene root) ──
+    const graphGroup = new THREE.Group();
+    graphGroup.name = 'graphGroup';
+    scene.add(graphGroup);
+    graphGroupRef.current = graphGroup;
 
-    // ── Stage geometry constants (reused in forces + tick) ──
+    // Pulls every node visual into graphGroup. Idempotent — only moves
+    // objects whose parent is something else (typically the scene root,
+    // where 3d-force-graph adds them on (re)build).
+    const reparentNodes = () => {
+      for (const node of filteredGraphData.nodes) {
+        const obj = node.__threeObj;
+        if (obj && obj.parent && obj.parent !== graphGroup) {
+          graphGroup.add(obj);
+        }
+      }
+    };
+    reparentNodesRef.current = reparentNodes;
+
+    // Reusable vector for converting node local positions to world space (shadow math).
+    const _tmpVec3 = new THREE.Vector3();
+
+    // Disable TrackballControls' camera rotation — we drive rotation on graphGroup
+    // ourselves. Pan (right-drag) and zoom (wheel) remain.
+    const controls = graph.controls();
+    if (controls) controls.noRotate = true;
+
+    // Custom left-drag → freely rotate graphGroup (yaw + pitch, no clamps).
+    // The room is sized to the graph's bounding sphere (see stageRadius below),
+    // so the graph can spin to any orientation without poking through walls.
+    const dom = renderer.domElement;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    const ROT_SPEED = 0.005;
+
+    const onPointerDown = (e) => {
+      if (e.button !== 0) return;
+      if (flyActiveRef.current) return;
+      if (hoveredNodeRef.current) return;
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    };
+    const onPointerMove = (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      graphGroup.rotation.y += dx * ROT_SPEED;
+      graphGroup.rotation.x += dy * ROT_SPEED;
+    };
+    const onPointerUp = () => { dragging = false; };
+
+    dom.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+
+    // ── Stage / graph-bound constants ──
+    // The graph's nodes live in a box (xLimit × yExtent × halfDepth). For free
+    // rotation around the origin, the room must enclose the box's circumscribed
+    // sphere. Floor, back wall, and side wall are all positioned at distance
+    // `stageRadius` from origin and scaled to span 2r × 2r so the rotated graph
+    // never pokes through. stageWidth / stageDepth / wallHeight here are the
+    // *baseline* geometry sizes — the actual room size comes from scaling.
+    const stageWidth = 900;
+    const stageDepth = 700;
+    const wallHeight = 520;
+    const floorY = -220;
     const xLimit = stageWidth / 2 - 60;   // soft-wall x boundary (with margin)
-    const yMax = 180;                   // ceiling
-    const yMin = floorY + 30;            // just above floor
+    const yMax = 180;                     // ceiling
+    const yMin = floorY + 30;             // just above floor
+
+    const layersForDepth = filteredGraphData.nodes.map((n) => n.layer ?? 0);
+    const layerSpan = layersForDepth.length
+      ? Math.max(...layersForDepth) - Math.min(...layersForDepth)
+      : 0;
+    const Y_EXTENT = Math.max(yMax, -yMin);
+    const STAGE_RADIUS_PADDING = 80;
+    const computeStageRadius = (spacing) => {
+      const halfDepth = (layerSpan * spacing) / 2;
+      return Math.sqrt(
+        xLimit * xLimit + Y_EXTENT * Y_EXTENT + halfDepth * halfDepth,
+      ) + STAGE_RADIUS_PADDING;
+    };
+    const initialStageRadius = computeStageRadius(config.layerSpacing);
 
     // ─── Floor ───────────────────────────────────────────────
+    // Sits at y = -r, scaled to span 2r × 2r in world XZ.
     const floorGeometry = new THREE.PlaneGeometry(stageWidth, stageDepth);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: initialColors.floor, roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide,
@@ -270,30 +370,47 @@ export default function GraphView({
     floorMatRef.current = floorMaterial;
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, floorY, 0);
+    floor.position.set(0, -initialStageRadius, 0);
+    floor.scale.set(
+      (2 * initialStageRadius) / stageWidth,
+      (2 * initialStageRadius) / stageDepth,
+      1,
+    );
     floor.receiveShadow = true;
     scene.add(floor);
 
     // ─── Back wall ───────────────────────────────────────────
-    const wallGeometry = new THREE.PlaneGeometry(stageWidth, 520);
+    // At z = -r, centered y=0, scaled to span 2r × 2r in world XY.
+    const wallGeometry = new THREE.PlaneGeometry(stageWidth, wallHeight);
     const wallMaterial = new THREE.MeshStandardMaterial({
       color: initialColors.backWall, roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
     });
     backWallMatRef.current = wallMaterial;
     const backWall = new THREE.Mesh(wallGeometry, wallMaterial);
-    backWall.position.set(0, floorY + 260, backWallZ);
+    backWall.position.set(0, 0, -initialStageRadius);
+    backWall.scale.set(
+      (2 * initialStageRadius) / stageWidth,
+      (2 * initialStageRadius) / wallHeight,
+      1,
+    );
     backWall.receiveShadow = true;
     scene.add(backWall);
 
-    // ─── Side wall (completes the stage corner, per the paper) ──
-    const sideWallGeometry = new THREE.PlaneGeometry(stageDepth, 520);
+    // ─── Side wall ─────────────────────────────────────────
+    // At x = -r, centered y=0, scaled to span 2r × 2r in world ZY.
+    const sideWallGeometry = new THREE.PlaneGeometry(stageDepth, wallHeight);
     const sideWallMaterial = new THREE.MeshStandardMaterial({
       color: initialColors.sideWall, roughness: 0.9, metalness: 0.05, side: THREE.DoubleSide,
     });
     sideWallMatRef.current = sideWallMaterial;
     const sideWall = new THREE.Mesh(sideWallGeometry, sideWallMaterial);
     sideWall.rotation.y = Math.PI / 2;
-    sideWall.position.set(-(stageWidth / 2), floorY + 260, 0);
+    sideWall.position.set(-initialStageRadius, 0, 0);
+    sideWall.scale.set(
+      (2 * initialStageRadius) / stageDepth,
+      (2 * initialStageRadius) / wallHeight,
+      1,
+    );
     sideWall.receiveShadow = true;
     scene.add(sideWall);
 
@@ -303,12 +420,15 @@ export default function GraphView({
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.left = -700;
-    directionalLight.shadow.camera.right = 700;
-    directionalLight.shadow.camera.top = 700;
-    directionalLight.shadow.camera.bottom = -700;
-    directionalLight.shadow.camera.near = 1;
-    directionalLight.shadow.camera.far = 1500;
+    {
+      const d = initialStageRadius + 200;
+      directionalLight.shadow.camera.left = -d;
+      directionalLight.shadow.camera.right = d;
+      directionalLight.shadow.camera.top = d;
+      directionalLight.shadow.camera.bottom = -d;
+      directionalLight.shadow.camera.near = 1;
+      directionalLight.shadow.camera.far = 2 * d + 500;
+    }
     scene.add(directionalLight);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -330,24 +450,104 @@ export default function GraphView({
     // Floor shadows  — lie flat on the floor (circle already in XY, rotate to XZ)
     const floorShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
     floorShadows.rotation.x = -Math.PI / 2;
-    floorShadows.position.y = floorY + 0.5;          // epsilon above floor
+    floorShadows.position.y = -initialStageRadius + 0.5;   // epsilon above floor
     floorShadows.renderOrder = 1;
     scene.add(floorShadows);
 
     // Back-wall shadows — stand upright on the back wall
     const backWallShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
-    backWallShadows.position.z = backWallZ + 0.5;    // epsilon in front of wall
+    backWallShadows.position.z = -initialStageRadius + 0.5; // epsilon in front of wall
     backWallShadows.renderOrder = 1;
     scene.add(backWallShadows);
 
     // Side-wall shadows — rotate to face the side wall
     const sideWallShadows = new THREE.InstancedMesh(shadowGeo, shadowMat, nodeCount);
     sideWallShadows.rotation.y = Math.PI / 2;
-    sideWallShadows.position.x = -(stageWidth / 2) + 0.5;  // epsilon in front of wall
+    sideWallShadows.position.x = -initialStageRadius + 0.5; // epsilon in front of wall
     sideWallShadows.renderOrder = 1;
     scene.add(sideWallShadows);
 
+    // ── Stage resizer (called when layerSpacing changes) ──
+    // Floor / back wall / side wall all sit at distance `r` from origin and
+    // span 2r × 2r so the rotated graph never clips through them. Scale uses
+    // each piece's baseline geometry size (stageWidth / stageDepth / wallHeight).
+    resizeStageRef.current = (newSpacing) => {
+      const r = computeStageRadius(newSpacing);
+      const sx = (2 * r) / stageWidth;
+      const sd = (2 * r) / stageDepth;
+      const sw = (2 * r) / wallHeight;
+
+      floor.position.y = -r;
+      floor.scale.set(sx, sd, 1);
+
+      backWall.position.z = -r;
+      backWall.scale.set(sx, sw, 1);
+
+      sideWall.position.x = -r;
+      sideWall.scale.set(sd, sw, 1);
+
+      floorShadows.position.y = -r + 0.5;
+      backWallShadows.position.z = -r + 0.5;
+      sideWallShadows.position.x = -r + 0.5;
+
+      const d = r + 200;
+      directionalLight.shadow.camera.left = -d;
+      directionalLight.shadow.camera.right = d;
+      directionalLight.shadow.camera.top = d;
+      directionalLight.shadow.camera.bottom = -d;
+      directionalLight.shadow.camera.far = 2 * d + 500;
+      directionalLight.shadow.camera.updateProjectionMatrix();
+    };
+
     const _dummy = new THREE.Object3D();
+
+    // ── Shadow projection update ──
+    // Each node casts an orthographic projection onto floor / back wall / side wall.
+    // Reads world position so shadows track graphGroup rotation correctly.
+    const updateShadows = () => {
+      filteredGraphData.nodes.forEach((node, i) => {
+        const s = 0.5 + (node.weight || 10) / 50;
+
+        let wx = node.x, wy = node.y, wz = node.z;
+        const obj = node.__threeObj;
+        if (obj) {
+          obj.getWorldPosition(_tmpVec3);
+          wx = _tmpVec3.x; wy = _tmpVec3.y; wz = _tmpVec3.z;
+        }
+
+        // Floor shadow: drop onto XZ plane (mesh's local XY → world XZ after -90° X rotation)
+        _dummy.position.set(wx, wz, 0);
+        _dummy.scale.setScalar(s);
+        _dummy.updateMatrix();
+        floorShadows.setMatrixAt(i, _dummy.matrix);
+
+        // Back-wall shadow: project onto XY plane in front of the wall
+        _dummy.position.set(wx, wy - floorY - 260, 0);
+        _dummy.scale.setScalar(s);
+        _dummy.updateMatrix();
+        backWallShadows.setMatrixAt(i, _dummy.matrix);
+
+        // Side-wall shadow: after the 90° Y rotation, local X→world Z, local Y→world Y
+        _dummy.position.set(wz, wy - floorY - 260, 0);
+        _dummy.scale.setScalar(s);
+        _dummy.updateMatrix();
+        sideWallShadows.setMatrixAt(i, _dummy.matrix);
+      });
+
+      floorShadows.instanceMatrix.needsUpdate = true;
+      backWallShadows.instanceMatrix.needsUpdate = true;
+      sideWallShadows.instanceMatrix.needsUpdate = true;
+    };
+
+    // Per-frame loop: reparents new node visuals into graphGroup (refresh()
+    // rebuilds asynchronously and may run when the engine is cool) and refreshes
+    // shadow projections so they track graphGroup rotation even after the
+    // simulation cools and onEngineTick stops firing.
+    let perFrameRafId = requestAnimationFrame(function perFrameLoop() {
+      reparentNodes();
+      updateShadows();
+      perFrameRafId = requestAnimationFrame(perFrameLoop);
+    });
 
     // ── Disable all default d3 forces ──
     graph.d3Force('charge', null);
@@ -418,8 +618,8 @@ export default function GraphView({
     function rebuildLayerPlanes() {
       // Tear down old planes
       for (const item of layerPlanesRef.current) {
-        scene.remove(item.plane);
-        scene.remove(item.edges);
+        graphGroup.remove(item.plane);
+        graphGroup.remove(item.edges);
         item.plane.geometry.dispose();
         item.plane.material.dispose();
         item.edges.geometry.dispose();
@@ -464,7 +664,7 @@ export default function GraphView({
         plane.receiveShadow = true;          // nodes drop shadows onto plane
         plane.renderOrder   = -1;            // draw before nodes/links
         plane.visible       = visible;
-        scene.add(plane);
+        graphGroup.add(plane);
 
         // Subtle border ring for legibility
         const edgesGeo = new THREE.EdgesGeometry(planeGeo);
@@ -478,7 +678,7 @@ export default function GraphView({
         edges.position.copy(plane.position);
         edges.renderOrder = -1;
         edges.visible     = visible;
-        scene.add(edges);
+        graphGroup.add(edges);
 
         layerPlanesRef.current.push({ plane, edges, z });
       }
@@ -592,7 +792,7 @@ export default function GraphView({
     });
 
     const lineSegments = new LineSegments2(lineGeometry, lineMaterial);
-    graph.scene().add(lineSegments);
+    graphGroup.add(lineSegments);
     linksRef.current = { lineSegments, lineGeometry, lineMaterial, linkPairs, posArray };
 
     // ── Per-tick update: z-lock + hard x/y clamp + links + shadow projections ──
@@ -646,38 +846,8 @@ export default function GraphView({
         linksRef.current.lineGeometry.setColors(color);
       }
 
-      // ── Shadow projections (UIST '92 stage metaphor) ──
-      // Each node casts an orthographic projection onto floor, back wall, side wall.
-      // The InstancedMesh for each surface is already translated/rotated to sit at
-      // the correct plane — we only need to supply x/y offsets within that plane.
-      filteredGraphData.nodes.forEach((node, i) => {
-        const s = 0.5 + (node.weight || 10) / 50;
-
-        // Floor shadow: drop onto XZ plane (position is in the mesh's local XY
-        // which, after the -90° X rotation, maps to world XZ)
-        _dummy.position.set(node.x, node.z, 0);
-        _dummy.scale.setScalar(s);
-        _dummy.updateMatrix();
-        floorShadows.setMatrixAt(i, _dummy.matrix);
-
-        // Back-wall shadow: project onto XY plane at z = backWallZ
-        // Local position is just (x, y) — the mesh already sits at backWallZ
-        _dummy.position.set(node.x, node.y - floorY - 260, 0);
-        _dummy.scale.setScalar(s);
-        _dummy.updateMatrix();
-        backWallShadows.setMatrixAt(i, _dummy.matrix);
-
-        // Side-wall shadow: project onto YZ plane at x = -(stageWidth/2)
-        // After the 90° Y rotation, local X→world Z, local Y→world Y
-        _dummy.position.set(node.z, node.y - floorY - 260, 0);
-        _dummy.scale.setScalar(s);
-        _dummy.updateMatrix();
-        sideWallShadows.setMatrixAt(i, _dummy.matrix);
-      });
-
-      floorShadows.instanceMatrix.needsUpdate = true;
-      backWallShadows.instanceMatrix.needsUpdate = true;
-      sideWallShadows.instanceMatrix.needsUpdate = true;
+      // Shadow projections are updated by the per-frame rAF loop (above)
+      // so they keep tracking graphGroup rotation after the engine cools.
     });
 
     // ── Initial camera position ──
@@ -689,6 +859,11 @@ export default function GraphView({
 
     // ── Cleanup ──
     return () => {
+      cancelAnimationFrame(perFrameRafId);
+      dom.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+
       scene.remove(floor, backWall, sideWall);
       scene.remove(directionalLight, ambientLight);
       scene.remove(floorShadows, backWallShadows, sideWallShadows);
@@ -700,8 +875,8 @@ export default function GraphView({
 
       // Dispose layer planes
       for (const item of layerPlanesRef.current) {
-        scene.remove(item.plane);
-        scene.remove(item.edges);
+        graphGroup.remove(item.plane);
+        graphGroup.remove(item.edges);
         item.plane.geometry.dispose();
         item.plane.material.dispose();
         item.edges.geometry.dispose();
@@ -709,13 +884,18 @@ export default function GraphView({
       }
       layerPlanesRef.current = [];
       rebuildLayerPlanesRef.current = null;
+      resizeStageRef.current = null;
+      reparentNodesRef.current = null;
 
       if (linksRef.current) {
-        scene.remove(linksRef.current.lineSegments);
+        graphGroup.remove(linksRef.current.lineSegments);
         linksRef.current.lineGeometry.dispose();
         linksRef.current.lineMaterial.dispose();
         linksRef.current = null;
       }
+
+      scene.remove(graphGroup);
+      graphGroupRef.current = null;
 
       graph._destructor && graph._destructor();
     };
@@ -737,7 +917,8 @@ export default function GraphView({
       shadowMatRef.current.opacity = c.shadowOpacity;
     }
     if (linksRef.current?.lineMaterial) {
-      linksRef.current.lineMaterial.color.set(c.link);
+      const userHex = normalizeHex(config.linkColor || '');
+      linksRef.current.lineMaterial.color.set(userHex || c.link);
       linksRef.current.lineMaterial.blending =
         theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending;
       linksRef.current.lineMaterial.needsUpdate = true;
@@ -755,7 +936,24 @@ export default function GraphView({
     // the new theme (different blending modes / emissive intensity / hue).
     graph.nodeThreeObject(graph.nodeThreeObject());
     graph.refresh();
+    reparentNodesRef.current?.();
   }, [theme]);
+
+  // ── User-supplied link color (hex). Falls back to the theme color. ──
+  useEffect(() => {
+    if (!linksRef.current?.lineMaterial) return;
+    const hex = normalizeHex(config.linkColor || '');
+    const c = readSceneColors();
+    linksRef.current.lineMaterial.color.set(hex || c.link);
+    linksRef.current.lineMaterial.needsUpdate = true;
+  }, [config.linkColor]);
+
+  // ── Keep configRef mirror in sync on every config change ──
+  // Without this, refs read by other effects (e.g. rebuildLayerPlanes reading
+  // showLayerPlanes) get stale whenever a non-physics field is toggled.
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
 
   // ── Update forces when physics config changes ──
   useEffect(() => {
@@ -802,6 +1000,9 @@ export default function GraphView({
     // Snap planes to new Z immediately (don't wait for simulation to re-settle)
     rebuildLayerPlanesRef.current?.();
 
+    // Stretch floor/walls so the back layers stay inside the room.
+    resizeStageRef.current?.(config.layerSpacing);
+
     graph.d3ReheatSimulation();
   }, [config.layerSpacing]);
 
@@ -823,6 +1024,7 @@ export default function GraphView({
       { x: 0, y: 0, z: 0 },
       800
     );
+    if (graphGroupRef.current) graphGroupRef.current.rotation.set(0, 0, 0);
   }, [resetViewTrigger, filteredGraphData]);
 
   // ── Window resize ──

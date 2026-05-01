@@ -1,0 +1,3066 @@
+{
+  "nodes": [
+    {
+      "id": "beautifulsoup4",
+      "label": "beautifulsoup4",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "jupyter",
+      "label": "jupyter",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "networkx",
+      "label": "networkx",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "plotly",
+      "label": "plotly",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "requests",
+      "label": "requests",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "scikit-learn",
+      "label": "scikit-learn",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "seaborn",
+      "label": "seaborn",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "statsmodels",
+      "label": "statsmodels",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "version": null,
+        "inDegree": 0,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "certifi",
+      "label": "certifi",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "charset-normalizer",
+      "label": "charset-normalizer",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "idna",
+      "label": "idna",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "ipywidgets",
+      "label": "ipywidgets",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "joblib",
+      "label": "joblib",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-console",
+      "label": "jupyter-console",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "matplotlib",
+      "label": "matplotlib",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "narwhals",
+      "label": "narwhals",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "nbconvert",
+      "label": "nbconvert",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "notebook",
+      "label": "notebook",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pandas",
+      "label": "pandas",
+      "layer": 1,
+      "weight": 26,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": true
+      }
+    },
+    {
+      "id": "patsy",
+      "label": "patsy",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "scipy",
+      "label": "scipy",
+      "layer": 1,
+      "weight": 26,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "soupsieve",
+      "label": "soupsieve",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "threadpoolctl",
+      "label": "threadpoolctl",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "typing-extensions",
+      "label": "typing-extensions",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "urllib3",
+      "label": "urllib3",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "bleach",
+      "label": "bleach",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "contourpy",
+      "label": "contourpy",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "cycler",
+      "label": "cycler",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "defusedxml",
+      "label": "defusedxml",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "fonttools",
+      "label": "fonttools",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyterlab",
+      "label": "jupyterlab",
+      "layer": 2,
+      "weight": 26,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyterlab-pygments",
+      "label": "jupyterlab-pygments",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyterlab-widgets",
+      "label": "jupyterlab-widgets",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "kiwisolver",
+      "label": "kiwisolver",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "mistune",
+      "label": "mistune",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "nbclient",
+      "label": "nbclient",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pandocfilters",
+      "label": "pandocfilters",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pillow",
+      "label": "pillow",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pyparsing",
+      "label": "pyparsing",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "python-dateutil",
+      "label": "python-dateutil",
+      "layer": 2,
+      "weight": 26,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "tzdata",
+      "label": "tzdata",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "widgetsnbextension",
+      "label": "widgetsnbextension",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "async-lru",
+      "label": "async-lru",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "httpx",
+      "label": "httpx",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "ipykernel",
+      "label": "ipykernel",
+      "layer": 3,
+      "weight": 34,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-lsp",
+      "label": "jupyter-lsp",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyterlab-server",
+      "label": "jupyterlab-server",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "notebook-shim",
+      "label": "notebook-shim",
+      "layer": 3,
+      "weight": 26,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "numpy",
+      "label": "numpy",
+      "layer": 3,
+      "weight": 74,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 8,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "setuptools",
+      "label": "setuptools",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "six",
+      "label": "six",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "tomli",
+      "label": "tomli",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "webencodings",
+      "label": "webencodings",
+      "layer": 3,
+      "weight": 18,
+      "color": "#f59e0b",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "appnope",
+      "label": "appnope",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "babel",
+      "label": "babel",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "comm",
+      "label": "comm",
+      "layer": 4,
+      "weight": 26,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "debugpy",
+      "label": "debugpy",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "httpcore",
+      "label": "httpcore",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "importlib-metadata",
+      "label": "importlib-metadata",
+      "layer": 4,
+      "weight": 42,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 4,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "ipython",
+      "label": "ipython",
+      "layer": 4,
+      "weight": 34,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "json5",
+      "label": "json5",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-server",
+      "label": "jupyter-server",
+      "layer": 4,
+      "weight": 50,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 5,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "nest-asyncio",
+      "label": "nest-asyncio",
+      "layer": 4,
+      "weight": 18,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "packaging",
+      "label": "packaging",
+      "layer": 4,
+      "weight": 58,
+      "color": "#10b981",
+      "metadata": {
+        "version": null,
+        "inDegree": 6,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "anyio",
+      "label": "anyio",
+      "layer": 5,
+      "weight": 26,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "argon2-cffi",
+      "label": "argon2-cffi",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "colorama",
+      "label": "colorama",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "decorator",
+      "label": "decorator",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "h11",
+      "label": "h11",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "ipython-pygments-lexers",
+      "label": "ipython-pygments-lexers",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jedi",
+      "label": "jedi",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jinja2",
+      "label": "jinja2",
+      "layer": 5,
+      "weight": 42,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 4,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-client",
+      "label": "jupyter-client",
+      "layer": 5,
+      "weight": 42,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 4,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-events",
+      "label": "jupyter-events",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-server-terminals",
+      "label": "jupyter-server-terminals",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "matplotlib-inline",
+      "label": "matplotlib-inline",
+      "layer": 5,
+      "weight": 26,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "nbformat",
+      "label": "nbformat",
+      "layer": 5,
+      "weight": 34,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "overrides",
+      "label": "overrides",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pexpect",
+      "label": "pexpect",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "prometheus-client",
+      "label": "prometheus-client",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "prompt-toolkit",
+      "label": "prompt-toolkit",
+      "layer": 5,
+      "weight": 26,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "psutil",
+      "label": "psutil",
+      "layer": 5,
+      "weight": 26,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pygments",
+      "label": "pygments",
+      "layer": 5,
+      "weight": 34,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pytz",
+      "label": "pytz",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "send2trash",
+      "label": "send2trash",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "stack-data",
+      "label": "stack-data",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "websocket-client",
+      "label": "websocket-client",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "zipp",
+      "label": "zipp",
+      "layer": 5,
+      "weight": 18,
+      "color": "#f43f5e",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "argon2-cffi-bindings",
+      "label": "argon2-cffi-bindings",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "asttokens",
+      "label": "asttokens",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "exceptiongroup",
+      "label": "exceptiongroup",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "executing",
+      "label": "executing",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "fastjsonschema",
+      "label": "fastjsonschema",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jsonschema",
+      "label": "jsonschema",
+      "layer": 6,
+      "weight": 34,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jupyter-core",
+      "label": "jupyter-core",
+      "layer": 6,
+      "weight": 74,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 8,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "markupsafe",
+      "label": "markupsafe",
+      "layer": 6,
+      "weight": 26,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "parso",
+      "label": "parso",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pure-eval",
+      "label": "pure-eval",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "python-json-logger",
+      "label": "python-json-logger",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pyyaml",
+      "label": "pyyaml",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pyzmq",
+      "label": "pyzmq",
+      "layer": 6,
+      "weight": 42,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 4,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "rfc3339-validator",
+      "label": "rfc3339-validator",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "rfc3986-validator",
+      "label": "rfc3986-validator",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "terminado",
+      "label": "terminado",
+      "layer": 6,
+      "weight": 26,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "tornado",
+      "label": "tornado",
+      "layer": 6,
+      "weight": 50,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 5,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "typing",
+      "label": "typing",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "wcwidth",
+      "label": "wcwidth",
+      "layer": 6,
+      "weight": 18,
+      "color": "#6366f1",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "attrs",
+      "label": "attrs",
+      "layer": 7,
+      "weight": 18,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "cffi",
+      "label": "cffi",
+      "layer": 7,
+      "weight": 18,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "jsonschema-specifications",
+      "label": "jsonschema-specifications",
+      "layer": 7,
+      "weight": 18,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "platformdirs",
+      "label": "platformdirs",
+      "layer": 7,
+      "weight": 18,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "ptyprocess",
+      "label": "ptyprocess",
+      "layer": 7,
+      "weight": 26,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pywinpty",
+      "label": "pywinpty",
+      "layer": 7,
+      "weight": 34,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 3,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "referencing",
+      "label": "referencing",
+      "layer": 7,
+      "weight": 26,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 2,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "rpds-py",
+      "label": "rpds-py",
+      "layer": 7,
+      "weight": 18,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "traitlets",
+      "label": "traitlets",
+      "layer": 7,
+      "weight": 106,
+      "color": "#ec4899",
+      "metadata": {
+        "version": null,
+        "inDegree": 12,
+        "isChosenRoot": false
+      }
+    },
+    {
+      "id": "pycparser",
+      "label": "pycparser",
+      "layer": 8,
+      "weight": 18,
+      "color": "#14b8a6",
+      "metadata": {
+        "version": null,
+        "inDegree": 1,
+        "isChosenRoot": false
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": "pandas",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.26.0"
+      }
+    },
+    {
+      "source": "pandas",
+      "target": "python-dateutil",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.8.2"
+      }
+    },
+    {
+      "source": "pandas",
+      "target": "tzdata",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "python-dateutil",
+      "target": "six",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.5"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=1.24.1"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "scipy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.10.0"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "joblib",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.3.0"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "threadpoolctl",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3.2.0"
+      }
+    },
+    {
+      "source": "scipy",
+      "target": "numpy",
+      "value": 0.6,
+      "restLength": 30,
+      "metadata": {
+        "requirement": "<2.7,>=1.26.4"
+      }
+    },
+    {
+      "source": "statsmodels",
+      "target": "numpy",
+      "value": 0.6,
+      "restLength": 45,
+      "metadata": {
+        "requirement": "<3,>=1.22.3"
+      }
+    },
+    {
+      "source": "statsmodels",
+      "target": "scipy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "!=1.9.2,>=1.8"
+      }
+    },
+    {
+      "source": "statsmodels",
+      "target": "pandas",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "!=2.1.0,>=1.4"
+      }
+    },
+    {
+      "source": "statsmodels",
+      "target": "patsy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.5.6"
+      }
+    },
+    {
+      "source": "statsmodels",
+      "target": "packaging",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=21.3"
+      }
+    },
+    {
+      "source": "patsy",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.4"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "contourpy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.1"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "cycler",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.10"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "fonttools",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.22.0"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "kiwisolver",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.3.1"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.23"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "packaging",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=20.0"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "pillow",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=8"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "pyparsing",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "python-dateutil",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.7"
+      }
+    },
+    {
+      "source": "contourpy",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.25"
+      }
+    },
+    {
+      "source": "seaborn",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": "!=1.24.0,>=1.20"
+      }
+    },
+    {
+      "source": "seaborn",
+      "target": "pandas",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.2"
+      }
+    },
+    {
+      "source": "seaborn",
+      "target": "matplotlib",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "!=3.6.1,>=3.4"
+      }
+    },
+    {
+      "source": "plotly",
+      "target": "narwhals",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.15.1"
+      }
+    },
+    {
+      "source": "plotly",
+      "target": "packaging",
+      "value": 0.3,
+      "restLength": 60,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter",
+      "target": "notebook",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter",
+      "target": "jupyter-console",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter",
+      "target": "nbconvert",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter",
+      "target": "ipykernel",
+      "value": 0.3,
+      "restLength": 45,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter",
+      "target": "ipywidgets",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter",
+      "target": "jupyterlab",
+      "value": 0.3,
+      "restLength": 30,
+      "metadata": {}
+    },
+    {
+      "source": "notebook",
+      "target": "jupyter-server",
+      "value": 0.6,
+      "restLength": 45,
+      "metadata": {
+        "requirement": "<3,>=2.4.0"
+      }
+    },
+    {
+      "source": "notebook",
+      "target": "jupyterlab-server",
+      "value": 0.6,
+      "restLength": 30,
+      "metadata": {
+        "requirement": "<3,>=2.28.0"
+      }
+    },
+    {
+      "source": "notebook",
+      "target": "jupyterlab",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<4.6,>=4.5.7"
+      }
+    },
+    {
+      "source": "notebook",
+      "target": "notebook-shim",
+      "value": 0.6,
+      "restLength": 30,
+      "metadata": {
+        "requirement": "<0.3,>=0.2"
+      }
+    },
+    {
+      "source": "notebook",
+      "target": "tornado",
+      "value": 0.45,
+      "restLength": 75,
+      "metadata": {
+        "requirement": ">=6.2.0"
+      }
+    },
+    {
+      "source": "jupyter-console",
+      "target": "ipykernel",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=6.14"
+      }
+    },
+    {
+      "source": "jupyter-console",
+      "target": "ipython",
+      "value": 0.3,
+      "restLength": 45,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter-console",
+      "target": "jupyter-client",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=7.0.0"
+      }
+    },
+    {
+      "source": "jupyter-console",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 75,
+      "metadata": {
+        "requirement": "!=5.0.*,>=4.12"
+      }
+    },
+    {
+      "source": "jupyter-console",
+      "target": "prompt-toolkit",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=3.0.30"
+      }
+    },
+    {
+      "source": "jupyter-console",
+      "target": "pygments",
+      "value": 0.3,
+      "restLength": 60,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter-console",
+      "target": "pyzmq",
+      "value": 0.45,
+      "restLength": 75,
+      "metadata": {
+        "requirement": ">=17"
+      }
+    },
+    {
+      "source": "jupyter-console",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 90,
+      "metadata": {
+        "requirement": ">=5.4"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "bleach",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "!=5.0.0"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "defusedxml",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "nbconvert",
+      "target": "importlib-metadata",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=3.6"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "jinja2",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=3.0"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 75,
+      "metadata": {
+        "requirement": ">=4.7"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "jupyterlab-pygments",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "nbconvert",
+      "target": "markupsafe",
+      "value": 0.45,
+      "restLength": 75,
+      "metadata": {
+        "requirement": ">=2.0"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "mistune",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<4,>=2.0.3"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "nbclient",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.5.0"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "nbformat",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=5.7"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "packaging",
+      "value": 0.3,
+      "restLength": 45,
+      "metadata": {}
+    },
+    {
+      "source": "nbconvert",
+      "target": "pandocfilters",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.4.1"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "pygments",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=2.4.1"
+      }
+    },
+    {
+      "source": "nbconvert",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 90,
+      "metadata": {
+        "requirement": ">=5.1"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "appnope",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.1.2"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "comm",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.1.1"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "debugpy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.6.5"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "ipython",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=7.23.1"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "jupyter-client",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=8.8.0"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": "!=6.0.*,>=5.1"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "matplotlib-inline",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=0.1"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "nest-asyncio",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.4"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "packaging",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=22"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "psutil",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=5.7"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "pyzmq",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=25"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "tornado",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=6.4.1"
+      }
+    },
+    {
+      "source": "ipykernel",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=5.4.0"
+      }
+    },
+    {
+      "source": "ipywidgets",
+      "target": "comm",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=0.1.3"
+      }
+    },
+    {
+      "source": "ipywidgets",
+      "target": "ipython",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=6.1.0"
+      }
+    },
+    {
+      "source": "ipywidgets",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 90,
+      "metadata": {
+        "requirement": ">=4.3.1"
+      }
+    },
+    {
+      "source": "ipywidgets",
+      "target": "widgetsnbextension",
+      "value": 0.75,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "~=4.0.14"
+      }
+    },
+    {
+      "source": "ipywidgets",
+      "target": "jupyterlab-widgets",
+      "value": 0.75,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "~=3.0.15"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "async-lru",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "httpx",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<1,>=0.25.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "importlib-metadata",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=4.8.3"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "ipykernel",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "!=6.30.0,>=6.5.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "jinja2",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=3.0.3"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "jupyter-core",
+      "value": 0.3,
+      "restLength": 60,
+      "metadata": {}
+    },
+    {
+      "source": "jupyterlab",
+      "target": "jupyter-lsp",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.0.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "jupyter-server",
+      "value": 0.6,
+      "restLength": 30,
+      "metadata": {
+        "requirement": "<3,>=2.4.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "jupyterlab-server",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<3,>=2.28.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "notebook-shim",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.2"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "packaging",
+      "value": 0.3,
+      "restLength": 30,
+      "metadata": {}
+    },
+    {
+      "source": "jupyterlab",
+      "target": "setuptools",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=41.1.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "tomli",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.2.2"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "tornado",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": ">=6.2.0"
+      }
+    },
+    {
+      "source": "jupyterlab",
+      "target": "traitlets",
+      "value": 0.3,
+      "restLength": 75,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter-server",
+      "target": "anyio",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3.1.0"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "argon2-cffi",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=21.1"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "jinja2",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3.0.3"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "jupyter-client",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=7.4.4"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": "!=5.0.*,>=4.12"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "jupyter-events",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.11.0"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "jupyter-server-terminals",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.4.4"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "nbformat",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.3.0"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "overrides",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.0"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "prometheus-client",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.9"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "pywinpty",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=2.0.1"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "pyzmq",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=24"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "send2trash",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.8.2"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "terminado",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=0.8.3"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "tornado",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=6.2.0"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=5.6.0"
+      }
+    },
+    {
+      "source": "jupyter-server",
+      "target": "websocket-client",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.7"
+      }
+    },
+    {
+      "source": "jupyterlab-server",
+      "target": "babel",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.10"
+      }
+    },
+    {
+      "source": "jupyterlab-server",
+      "target": "importlib-metadata",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.8.3"
+      }
+    },
+    {
+      "source": "jupyterlab-server",
+      "target": "jinja2",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=3.0.3"
+      }
+    },
+    {
+      "source": "jupyterlab-server",
+      "target": "json5",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.9.0"
+      }
+    },
+    {
+      "source": "jupyterlab-server",
+      "target": "jsonschema",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=4.18.0"
+      }
+    },
+    {
+      "source": "jupyterlab-server",
+      "target": "jupyter-server",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<3,>=1.21"
+      }
+    },
+    {
+      "source": "notebook-shim",
+      "target": "jupyter-server",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<3,>=1.8"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "colorama",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.4.4"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "decorator",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.1.0"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "ipython-pygments-lexers",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.0"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "jedi",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.18.2"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "matplotlib-inline",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.1.6"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "pexpect",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">4.6"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "prompt-toolkit",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<3.1.0,>=3.0.41"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "psutil",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=7"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "pygments",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.14.0"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "stack-data",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.6.0"
+      }
+    },
+    {
+      "source": "ipython",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=5.13.0"
+      }
+    },
+    {
+      "source": "jupyter-client",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.1"
+      }
+    },
+    {
+      "source": "jupyter-client",
+      "target": "pyzmq",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=25.0"
+      }
+    },
+    {
+      "source": "jupyter-client",
+      "target": "tornado",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=6.4.1"
+      }
+    },
+    {
+      "source": "jupyter-client",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=5.3"
+      }
+    },
+    {
+      "source": "jupyter-core",
+      "target": "platformdirs",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.5"
+      }
+    },
+    {
+      "source": "jupyter-core",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.3"
+      }
+    },
+    {
+      "source": "prompt-toolkit",
+      "target": "wcwidth",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "pyzmq",
+      "target": "cffi",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "beautifulsoup4",
+      "target": "soupsieve",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.6.1"
+      }
+    },
+    {
+      "source": "beautifulsoup4",
+      "target": "typing-extensions",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.0.0"
+      }
+    },
+    {
+      "source": "bleach",
+      "target": "webencodings",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "importlib-metadata",
+      "target": "zipp",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3.20"
+      }
+    },
+    {
+      "source": "jinja2",
+      "target": "markupsafe",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.0"
+      }
+    },
+    {
+      "source": "nbclient",
+      "target": "jupyter-client",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=6.1.12"
+      }
+    },
+    {
+      "source": "nbclient",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 60,
+      "metadata": {
+        "requirement": "!=5.0.*,>=4.12"
+      }
+    },
+    {
+      "source": "nbclient",
+      "target": "nbformat",
+      "value": 0.45,
+      "restLength": 45,
+      "metadata": {
+        "requirement": ">=5.1.3"
+      }
+    },
+    {
+      "source": "nbclient",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 75,
+      "metadata": {
+        "requirement": ">=5.4"
+      }
+    },
+    {
+      "source": "nbformat",
+      "target": "fastjsonschema",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.15"
+      }
+    },
+    {
+      "source": "nbformat",
+      "target": "jsonschema",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.6"
+      }
+    },
+    {
+      "source": "nbformat",
+      "target": "jupyter-core",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "!=5.0.*,>=4.12"
+      }
+    },
+    {
+      "source": "nbformat",
+      "target": "traitlets",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=5.1"
+      }
+    },
+    {
+      "source": "matplotlib-inline",
+      "target": "traitlets",
+      "value": 0.3,
+      "restLength": 30,
+      "metadata": {}
+    },
+    {
+      "source": "httpx",
+      "target": "anyio",
+      "value": 0.3,
+      "restLength": 30,
+      "metadata": {}
+    },
+    {
+      "source": "httpx",
+      "target": "httpcore",
+      "value": 1.0,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "==1.*"
+      }
+    },
+    {
+      "source": "jupyter-lsp",
+      "target": "jupyter-server",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.1.2"
+      }
+    },
+    {
+      "source": "jupyter-lsp",
+      "target": "importlib-metadata",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.8.3"
+      }
+    },
+    {
+      "source": "anyio",
+      "target": "exceptiongroup",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.2"
+      }
+    },
+    {
+      "source": "argon2-cffi",
+      "target": "argon2-cffi-bindings",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter-events",
+      "target": "jsonschema",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.18.0"
+      }
+    },
+    {
+      "source": "jupyter-events",
+      "target": "python-json-logger",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.0.4"
+      }
+    },
+    {
+      "source": "jupyter-events",
+      "target": "pyyaml",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=5.3"
+      }
+    },
+    {
+      "source": "jupyter-events",
+      "target": "referencing",
+      "value": 0.3,
+      "restLength": 30,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter-events",
+      "target": "rfc3339-validator",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "jupyter-events",
+      "target": "rfc3986-validator",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.1.1"
+      }
+    },
+    {
+      "source": "jupyter-server-terminals",
+      "target": "pywinpty",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=2.0.3"
+      }
+    },
+    {
+      "source": "jupyter-server-terminals",
+      "target": "terminado",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.8.3"
+      }
+    },
+    {
+      "source": "overrides",
+      "target": "typing",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "terminado",
+      "target": "ptyprocess",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "terminado",
+      "target": "pywinpty",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.1.0"
+      }
+    },
+    {
+      "source": "babel",
+      "target": "pytz",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2015.7"
+      }
+    },
+    {
+      "source": "jsonschema",
+      "target": "attrs",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=22.2.0"
+      }
+    },
+    {
+      "source": "jsonschema",
+      "target": "jsonschema-specifications",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2023.03.6"
+      }
+    },
+    {
+      "source": "jsonschema",
+      "target": "referencing",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.28.4"
+      }
+    },
+    {
+      "source": "jsonschema",
+      "target": "rpds-py",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.25.0"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "charset-normalizer",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<4,>=2"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "idna",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<4,>=2.5"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "urllib3",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<3,>=1.26"
+      }
+    },
+    {
+      "source": "requests",
+      "target": "certifi",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2023.5.7"
+      }
+    },
+    {
+      "source": "jedi",
+      "target": "parso",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<0.9.0,>=0.8.4"
+      }
+    },
+    {
+      "source": "pexpect",
+      "target": "ptyprocess",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=0.5"
+      }
+    },
+    {
+      "source": "stack-data",
+      "target": "executing",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.2.0"
+      }
+    },
+    {
+      "source": "stack-data",
+      "target": "asttokens",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.1.0"
+      }
+    },
+    {
+      "source": "stack-data",
+      "target": "pure-eval",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "cffi",
+      "target": "pycparser",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "httpcore",
+      "target": "h11",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.16"
+      }
+    }
+  ],
+  "layers": [
+    {
+      "index": 0,
+      "label": "depth 0"
+    },
+    {
+      "index": 1,
+      "label": "depth 1"
+    },
+    {
+      "index": 2,
+      "label": "depth 2"
+    },
+    {
+      "index": 3,
+      "label": "depth 3"
+    },
+    {
+      "index": 4,
+      "label": "depth 4"
+    },
+    {
+      "index": 5,
+      "label": "depth 5"
+    },
+    {
+      "index": 6,
+      "label": "depth 6"
+    },
+    {
+      "index": 7,
+      "label": "depth 7"
+    },
+    {
+      "index": 8,
+      "label": "depth 8"
+    }
+  ]
+}

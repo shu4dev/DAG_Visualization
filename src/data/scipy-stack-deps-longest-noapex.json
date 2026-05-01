@@ -1,0 +1,384 @@
+{
+  "nodes": [
+    {
+      "id": "matplotlib",
+      "label": "matplotlib",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 0
+      }
+    },
+    {
+      "id": "pandas",
+      "label": "pandas",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 0
+      }
+    },
+    {
+      "id": "scikit-learn",
+      "label": "scikit-learn",
+      "layer": 0,
+      "weight": 10,
+      "color": "#3b82f6",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 0
+      }
+    },
+    {
+      "id": "contourpy",
+      "label": "contourpy",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "cycler",
+      "label": "cycler",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "fonttools",
+      "label": "fonttools",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "joblib",
+      "label": "joblib",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "kiwisolver",
+      "label": "kiwisolver",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "packaging",
+      "label": "packaging",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "pillow",
+      "label": "pillow",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "pyparsing",
+      "label": "pyparsing",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "python-dateutil",
+      "label": "python-dateutil",
+      "layer": 1,
+      "weight": 26,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 2
+      }
+    },
+    {
+      "id": "scipy",
+      "label": "scipy",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "threadpoolctl",
+      "label": "threadpoolctl",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "tzdata",
+      "label": "tzdata",
+      "layer": 1,
+      "weight": 18,
+      "color": "#06b6d4",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    },
+    {
+      "id": "numpy",
+      "label": "numpy",
+      "layer": 2,
+      "weight": 42,
+      "color": "#8b5cf6",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 4
+      }
+    },
+    {
+      "id": "six",
+      "label": "six",
+      "layer": 2,
+      "weight": 18,
+      "color": "#8b5cf6",
+      "metadata": {
+        "isApex": false,
+        "version": null,
+        "inDegree": 1
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": "scipy",
+      "target": "numpy",
+      "value": 0.6,
+      "restLength": 15,
+      "metadata": {
+        "requirement": "<2.7,>=1.26.4"
+      }
+    },
+    {
+      "source": "pandas",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.26.0"
+      }
+    },
+    {
+      "source": "pandas",
+      "target": "python-dateutil",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.8.2"
+      }
+    },
+    {
+      "source": "pandas",
+      "target": "tzdata",
+      "value": 0.3,
+      "restLength": 15,
+      "metadata": {}
+    },
+    {
+      "source": "python-dateutil",
+      "target": "six",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.5"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.24.1"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "scipy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.10.0"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "joblib",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.3.0"
+      }
+    },
+    {
+      "source": "scikit-learn",
+      "target": "threadpoolctl",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3.2.0"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "contourpy",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.0.1"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "cycler",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=0.10"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "fonttools",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=4.22.0"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "kiwisolver",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=1.3.1"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "numpy",
+      "value": 0.45,
+      "restLength": 30,
+      "metadata": {
+        "requirement": ">=1.23"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "packaging",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=20.0"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "pillow",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=8"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "pyparsing",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=3"
+      }
+    },
+    {
+      "source": "matplotlib",
+      "target": "python-dateutil",
+      "value": 0.45,
+      "restLength": 15,
+      "metadata": {
+        "requirement": ">=2.7"
+      }
+    }
+  ],
+  "layers": [
+    {
+      "index": 0,
+      "label": "stack (apex)"
+    },
+    {
+      "index": 1,
+      "label": "chosen libraries"
+    },
+    {
+      "index": 2,
+      "label": "depth 1"
+    }
+  ]
+}

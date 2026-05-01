@@ -27,6 +27,9 @@ export function useForceConfig() {
     // Toggle: render translucent floor plates at each layer's Z (visual only)
     showLayerPlanes: true,
 
+    // Hex override for link color; '' means "use the current theme's --scene-link"
+    linkColor: '',
+
   });
 
   const updateConfig = useCallback((key, value) => {
