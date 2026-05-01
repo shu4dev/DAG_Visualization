@@ -4,8 +4,6 @@ import ControlPanel from './components/ControlPanel';
 import NodeInfo from './components/NodeInfo';
 import { useForceConfig } from './hooks/useForceConfig';
 import { generateSampleData, parseAnyGraphInput, fetchGraphData } from './data/sampleData';
-import scrapyDeps from './data/scrapy-deps.json';
-import { StressBench } from './components/StressBench';
 
 /**
  * App Component
@@ -25,6 +23,7 @@ export default function App() {
   const handleLoadSample = useCallback(() => {
     setError(null);
     const data = parseAnyGraphInput(scrapyDeps);
+    const data = generateSampleData();
     setGraphData(data);
     setSelectedNode(null);
   }, []);
@@ -160,10 +159,7 @@ export default function App() {
  
         {/* Selected node info overlay */}
         <NodeInfo node={selectedNode} />
- 
-        {/* Stress-test overlay (top-left) */}
-        <StressBench onLoadGraph={setGraphData} />
- 
+
         {/* Error banner */}
         {error && (
           <div
@@ -194,6 +190,7 @@ export default function App() {
         onLoadFromAPI={handleLoadFromAPI}
         onFileUpload={handleFileUpload}
         onResetView={handleResetView}
+        onLoadGraph={setGraphData}
       />
     </div>
   );

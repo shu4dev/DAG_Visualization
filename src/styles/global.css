@@ -519,54 +519,50 @@ select:hover {
    Benchmark HUD styles
    ======================================== */
 
-/* ── Container ─────────────────────────────────────────────────────────── */
-
-.sb-root {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 9999;
-  width: 320px;
-  max-height: 92vh;
-  overflow-y: auto;
-  background: rgba(9, 11, 17, 0.93);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 10px;
-  padding: 12px 14px;
+/* ── Tab switcher (rendered by ControlPanel) ─────────────────────────── */
+ 
+.panel-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 12px;
+}
+.panel-tab {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: #94a3b8;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--sb-mono);
+  letter-spacing: 0.04em;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.panel-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+}
+.panel-tab.active {
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.4);
+  color: var(--sb-purple);
+  font-weight: 600;
+}
+ 
+/* ── Inline container (lives inside ControlPanel) ─────────────────────── */
+ 
+.sb-inline {
   font-family: var(--sb-mono);
   font-size: 11px;
   color: #cbd5e1;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  padding: 0 16px 16px;
 }
-
-/* ── Header ────────────────────────────────────────────────────────────── */
-
-.sb-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.sb-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--sb-purple);
-  text-transform: uppercase;
-}
-.sb-collapse-btn {
-  background: none;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  padding: 0 2px;
-}
-
+ 
 /* ── Metrics row ──────────────────────────────────────────────────────── */
-
+ 
 .sb-metrics-row {
   display: flex;
   gap: 8px;
@@ -591,33 +587,32 @@ select:hover {
   font-size: 17px;
   font-weight: 700;
 }
-
+ 
 /* ── Tier modifiers (apply to .sb-metric-box, .sb-metric-value, table cells, hint legend) ── */
-
-/* When dim: keep grey text, hide accent border */
+ 
 .sb-tier-dim          { color: var(--sb-fps-idle); }
 .sb-metric-box.sb-tier-dim { border-color: transparent; }
-
+ 
 .sb-tier-idle         { color: var(--sb-fps-idle); }
 .sb-metric-box.sb-tier-idle { border-color: var(--sb-fps-idle); }
-
+ 
 .sb-tier-good         { color: var(--sb-fps-good); }
 .sb-metric-box.sb-tier-good { border-color: var(--sb-fps-good); }
-
+ 
 .sb-tier-ok           { color: var(--sb-fps-ok); }
 .sb-metric-box.sb-tier-ok   { border-color: var(--sb-fps-ok); }
-
+ 
 .sb-tier-bad          { color: var(--sb-fps-bad); }
 .sb-metric-box.sb-tier-bad  { border-color: var(--sb-fps-bad); }
-
+ 
 .sb-tier-dead         { color: var(--sb-fps-dead); }
 .sb-metric-box.sb-tier-dead { border-color: var(--sb-fps-dead); }
-
+ 
 .sb-tier-blue         { color: var(--sb-blue); }
 .sb-metric-box.sb-tier-blue { border-color: var(--sb-blue); }
-
+ 
 /* ── Auto-run progress ────────────────────────────────────────────────── */
-
+ 
 .sb-autorun-bar {
   background: rgba(45, 212, 191, 0.08);
   border: 1px solid rgba(45, 212, 191, 0.3);
@@ -630,9 +625,9 @@ select:hover {
   color: var(--sb-teal);
   letter-spacing: 0.04em;
 }
-
+ 
 /* ── Groups ───────────────────────────────────────────────────────────── */
-
+ 
 .sb-group         { margin-bottom: 12px; }
 .sb-group-label {
   font-size: 9px;
@@ -641,9 +636,9 @@ select:hover {
   text-transform: uppercase;
   margin-bottom: 5px;
 }
-
+ 
 /* ── Buttons (base + modifiers) ────────────────────────────────────────── */
-
+ 
 .sb-btn {
   display: block;
   width: 100%;
@@ -667,7 +662,7 @@ select:hover {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
+ 
 .sb-btn--run-all {
   background: rgba(45, 212, 191, 0.15);
   border-color: rgba(45, 212, 191, 0.4);
@@ -703,12 +698,12 @@ select:hover {
   font-weight: 600;
   margin-bottom: 0;
 }
-
+ 
 .sb-btn-row     { display: flex; gap: 6px; margin-top: 8px; }
 .sb-export-row  { display: flex; gap: 6px; margin-bottom: 6px; }
-
+ 
 /* ── Notice toast ─────────────────────────────────────────────────────── */
-
+ 
 .sb-notice {
   font-size: 10px;
   color: var(--sb-teal);
@@ -718,9 +713,9 @@ select:hover {
   border-radius: 4px;
   padding: 3px 6px;
 }
-
+ 
 /* ── Slider ───────────────────────────────────────────────────────────── */
-
+ 
 .sb-slider-row   { margin-bottom: 6px; }
 .sb-slider-label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; }
 .sb-slider {
@@ -728,9 +723,9 @@ select:hover {
   accent-color: var(--sb-purple);
   cursor: pointer;
 }
-
+ 
 /* ── Results table ────────────────────────────────────────────────────── */
-
+ 
 .sb-results-header {
   display: flex;
   justify-content: space-between;
@@ -747,7 +742,7 @@ select:hover {
   padding: 0;
 }
 .sb-clear-btn:hover { color: #cbd5e1; }
-
+ 
 .sb-table-wrap { overflow-x: auto; }
 .sb-table {
   width: 100%;
@@ -775,12 +770,13 @@ select:hover {
   white-space: nowrap;
 }
 .sb-cell--fps   { font-weight: 600; }
-
+ 
 /* ── Hint legend ──────────────────────────────────────────────────────── */
-
+ 
 .sb-hint {
   margin-top: 8px;
   font-size: 9px;
   color: #334155;
   line-height: 1.6;
 }
+ 

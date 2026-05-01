@@ -1,29 +1,24 @@
 /**
  * StressBench.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * A fixed-position overlay panel that:
- *   1. Lets you load any preset (or custom) benchmark scenario into the renderer
- *   2. Measures live FPS via requestAnimationFrame
- *   3. Reports JS heap usage via performance.memory (Chromium only; null elsewhere)
- *   4. Times simulation convergence by detecting when FPS stabilises
- *   5. Logs every run to a results table you can eyeball for threshold hunting
- *   6. Auto-runs all presets sequentially ("Run All")
- *   7. Exports results as Markdown (clipboard) or JSON (download) for .md docs
+ * Renders inside the ControlPanel "Benchmark" tab.  Lets you:
+ *   1. Load any preset (or custom) benchmark scenario into the renderer
+ *   2. See live FPS / memory / convergence-time metrics
+ *   3. Auto-run all 8 presets sequentially ("Run all")
+ *   4. Export results as Markdown (clipboard) or JSON (download)
  *
- * ── Integration (two lines in App.jsx) ───────────────────────────────────────
+ * The component takes a single `onLoadGraph` prop — the same setter you'd
+ * normally feed graph data into.
  *
- *   import { StressBench } from './components/StressBench';
+ * Styles live in `./stress-bench.css`. Tweak the `--sb-*` CSS variables to
+ * re-theme the panel.
  *
- *   // Inside the graph-container div, alongside <NodeInfo />:
- *   <StressBench onLoadGraph={setGraphData} />
-
- *
- * ── Convergence heuristic ─────────────────────────────────────────────────────
+ * ── Convergence heuristic ─────────────────────────────────────────────────
  *   We sample FPS every 500 ms.  Once we collect 4 consecutive samples whose
  *   spread (max − min) is ≤ 3 fps we declare the simulation converged.
  *   This works without touching the physics engine internals.
  *
- * ── Threshold hunting guide ──────────────────────────────────────────────────
+ * ── Threshold hunting guide ──────────────────────────────────────────────
  *   • FPS < 30  → "struggling"  (orange)
  *   • FPS < 15  → "unusable"    (red)
  *   • Conv = ∞  → simulation never cooled within the 30 s observation window
@@ -69,11 +64,11 @@ const AUTORUN_GAP_MS    = 1500;   // pause between auto-run scenarios
  * @param {{
  *   onLoadGraph: (data: any) => void,
  *   simulationConverged?: boolean,
+ *   showMiniBar?: boolean,
  * }} props
  */
-export function StressBench({ onLoadGraph, simulationConverged }) {
+export function StressBench({ onLoadGraph, simulationConverged, showMiniBar }) {
   // ── UI state ────────────────────────────────────────────────────────────
-  const [open,         setOpen]         = useState(true);
   const [customNodes,  setCustomNodes]  = useState(200);
   const [customLayers, setCustomLayers] = useState(5);
   const [customEdges,  setCustomEdges]  = useState(400);
@@ -431,19 +426,35 @@ export function StressBench({ onLoadGraph, simulationConverged }) {
   const convTier    = !isRunning ? 'dim' : (convMs === null && converged.current ? 'bad' : 'blue');
 
   return (
-    <div className="sb-root">
-      {/* ── Header ── */}
-      <div className="sb-header">
-        <span className="sb-title">⚡ STRESS BENCH</span>
-        <button className="sb-collapse-btn" onClick={() => setOpen(v => !v)}>
-          {open ? '▾' : '▸'}
-        </button>
-      </div>
+    <div className="sb-inline">
+      {/*
+        Mini-bar: fixed-position summary that appears when the user is on
+        the Controls tab (showMiniBar=true) AND a benchmark is running.
+        Lets you tweak Force Settings while still seeing FPS/MEM/CONV update.
+      */}
+      {showMiniBar && isRunning && (
+        <div className="sb-mini-bar">
+          <span className="sb-mini-label">⚡ BENCH</span>
+          <span className={`sb-mini-metric sb-tier-${liveFpsTier}`}>
+            <span className="sb-mini-key">FPS</span>{fps ?? '—'}
+          </span>
+          <span className={`sb-mini-metric sb-tier-${memTier}`}>
+            <span className="sb-mini-key">MEM</span>{memMB ?? '—'}
+          </span>
+          <span className={`sb-mini-metric sb-tier-${convTier}`}>
+            <span className="sb-mini-key">CONV</span>
+            {convMs !== null ? `${convMs}ms` : converged.current ? '∞' : `${elapsed}s…`}
+          </span>
+          <button className="sb-mini-stop" onClick={stopBench} title="Stop benchmark">
+            ■
+          </button>
+        </div>
+      )}
 
-      {/* ── Live metrics bar (always visible) ── */}
+      {/* ── Live metrics bar ── */}
       <div className="sb-metrics-row">
-        <MetricBox label="FPS"      value={fps   ?? '—'} tier={liveFpsTier} />
-        <MetricBox label="MEM MB"   value={memMB ?? '—'} tier={memTier}     />
+        <MetricBox label="FPS"    value={fps   ?? '—'} tier={liveFpsTier} />
+        <MetricBox label="MEM MB" value={memMB ?? '—'} tier={memTier}     />
         <MetricBox
           label="CONV ms"
           value={
@@ -468,134 +479,130 @@ export function StressBench({ onLoadGraph, simulationConverged }) {
         </div>
       )}
 
-      {open && (
-        <>
-          {/* ── Run All button ── */}
-          <div className="sb-group">
+      {/* ── Run All button ── */}
+      <div className="sb-group">
+        <button
+          className="sb-btn sb-btn--run-all"
+          onClick={runAll}
+          disabled={autoRun.active}
+        >
+          ▶▶ Run all 8 presets
+        </button>
+      </div>
+
+      {/* ── Preset groups ── */}
+      {['nodes', 'density', 'layers'].map(group => (
+        <div key={group} className="sb-group">
+          <div className="sb-group-label">{GROUP_LABELS[group]}</div>
+          {PRESETS.filter(p => p.group === group).map((p, i) => (
             <button
-              className="sb-btn sb-btn--run-all"
-              onClick={runAll}
+              key={i}
+              className="sb-btn"
+              onClick={() => loadScenario(p.nodes, p.layers, p.edges, p.label, p.group)}
               disabled={autoRun.active}
             >
-              ▶▶ Run all 8 presets
+              {p.label}
+            </button>
+          ))}
+        </div>
+      ))}
+
+      {/* ── Custom sliders ── */}
+      <div className="sb-group">
+        <div className="sb-group-label">✦ Custom</div>
+        <SliderRow
+          label={`Nodes: ${customNodes.toLocaleString()}`}
+          min={1} max={6000} step={1}
+          value={customNodes} onChange={setCustomNodes}
+        />
+        <SliderRow
+          label={`Layers: ${customLayers}`}
+          min={1} max={60} step={1}
+          value={customLayers} onChange={setCustomLayers}
+        />
+        <SliderRow
+          label={`Edges: ${customEdges.toLocaleString()}`}
+          min={0} max={10000} step={50}
+          value={customEdges} onChange={setCustomEdges}
+        />
+        <div className="sb-btn-row">
+          <button
+            className="sb-btn sb-btn--run"
+            onClick={() =>
+              loadScenario(
+                customNodes, customLayers, customEdges,
+                `${customNodes}n·${customLayers}L·${customEdges}E`,
+                'custom',
+              )
+            }
+            disabled={autoRun.active}
+          >
+            ▶ Run
+          </button>
+          {isRunning && !autoRun.active && (
+            <button className="sb-btn sb-btn--stop" onClick={stopBench}>
+              ■ Stop
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Results table + export ── */}
+      {results.length > 0 && (
+        <div className="sb-group">
+          <div className="sb-results-header">
+            <div className="sb-group-label">Results ({results.length})</div>
+            <button className="sb-clear-btn" onClick={() => setResults([])}>clear</button>
+          </div>
+
+          {/* Export buttons */}
+          <div className="sb-export-row">
+            <button className="sb-btn sb-btn--export" onClick={copyMarkdown}>
+              Copy MD
+            </button>
+            <button className="sb-btn sb-btn--export" onClick={exportJSON}>
+              Export JSON
             </button>
           </div>
+          {exportNotice && <div className="sb-notice">{exportNotice}</div>}
 
-          {/* ── Preset groups ── */}
-          {['nodes', 'density', 'layers'].map(group => (
-            <div key={group} className="sb-group">
-              <div className="sb-group-label">{GROUP_LABELS[group]}</div>
-              {PRESETS.filter(p => p.group === group).map((p, i) => (
-                <button
-                  key={i}
-                  className="sb-btn"
-                  onClick={() => loadScenario(p.nodes, p.layers, p.edges, p.label, p.group)}
-                  disabled={autoRun.active}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          ))}
-
-          {/* ── Custom sliders ── */}
-          <div className="sb-group">
-            <div className="sb-group-label">✦ Custom</div>
-            <SliderRow
-              label={`Nodes: ${customNodes.toLocaleString()}`}
-              min={1} max={6000} step={1}
-              value={customNodes} onChange={setCustomNodes}
-            />
-            <SliderRow
-              label={`Layers: ${customLayers}`}
-              min={1} max={60} step={1}
-              value={customLayers} onChange={setCustomLayers}
-            />
-            <SliderRow
-              label={`Edges: ${customEdges.toLocaleString()}`}
-              min={0} max={10000} step={50}
-              value={customEdges} onChange={setCustomEdges}
-            />
-            <div className="sb-btn-row">
-              <button
-                className="sb-btn sb-btn--run"
-                onClick={() =>
-                  loadScenario(
-                    customNodes, customLayers, customEdges,
-                    `${customNodes}n·${customLayers}L·${customEdges}E`,
-                    'custom',
-                  )
-                }
-                disabled={autoRun.active}
-              >
-                ▶ Run
-              </button>
-              {isRunning && !autoRun.active && (
-                <button className="sb-btn sb-btn--stop" onClick={stopBench}>
-                  ■ Stop
-                </button>
-              )}
-            </div>
+          <div className="sb-table-wrap">
+            <table className="sb-table">
+              <thead>
+                <tr>
+                  {['#', 'Scenario', 'N', 'L', 'E', 'FPS', 'MEM', 'Conv ms'].map(h => (
+                    <th key={h}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {results.map(r => (
+                  <tr key={r.id}>
+                    <td>{r.id}</td>
+                    <td className="sb-cell--scenario" title={r.label}>{r.label}</td>
+                    <td>{r.nodes.toLocaleString()}</td>
+                    <td>{r.layers}</td>
+                    <td>{r.edges.toLocaleString()}</td>
+                    <td className={`sb-cell--fps sb-tier-${tierFor(r.fps)}`}>{r.fps}</td>
+                    <td>{r.memMB ?? '—'}</td>
+                    <td className={r.convMs === null ? 'sb-tier-bad' : ''}>
+                      {r.convMs !== null ? r.convMs.toLocaleString() : '∞'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          {/* ── Results table + export ── */}
-          {results.length > 0 && (
-            <div className="sb-group">
-              <div className="sb-results-header">
-                <div className="sb-group-label">📋 Results ({results.length})</div>
-                <button className="sb-clear-btn" onClick={() => setResults([])}>clear</button>
-              </div>
-
-              {/* Export buttons */}
-              <div className="sb-export-row">
-                <button className="sb-btn sb-btn--export" onClick={copyMarkdown}>
-                  📝 Copy MD
-                </button>
-                <button className="sb-btn sb-btn--export" onClick={exportJSON}>
-                  💾 Export JSON
-                </button>
-              </div>
-              {exportNotice && <div className="sb-notice">{exportNotice}</div>}
-
-              <div className="sb-table-wrap">
-                <table className="sb-table">
-                  <thead>
-                    <tr>
-                      {['#', 'Scenario', 'N', 'L', 'E', 'FPS', 'MEM', 'Conv ms'].map(h => (
-                        <th key={h}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.map(r => (
-                      <tr key={r.id}>
-                        <td>{r.id}</td>
-                        <td className="sb-cell--scenario" title={r.label}>{r.label}</td>
-                        <td>{r.nodes.toLocaleString()}</td>
-                        <td>{r.layers}</td>
-                        <td>{r.edges.toLocaleString()}</td>
-                        <td className={`sb-cell--fps sb-tier-${tierFor(r.fps)}`}>{r.fps}</td>
-                        <td>{r.memMB ?? '—'}</td>
-                        <td className={r.convMs === null ? 'sb-tier-bad' : ''}>
-                          {r.convMs !== null ? r.convMs.toLocaleString() : '∞'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Threshold legend */}
-              <div className="sb-hint">
-                FPS colours: <span className="sb-tier-good">≥50 good</span>{' · '}
-                <span className="sb-tier-ok">30–49 ok</span>{' · '}
-                <span className="sb-tier-bad">15–29 struggling</span>{' · '}
-                <span className="sb-tier-dead">&lt;15 unusable</span>
-                {' · '}Conv ∞ = never converged (&gt;30 s)
-              </div>
-            </div>
-          )}
-        </>
+          {/* Threshold legend */}
+          <div className="sb-hint">
+            FPS colours: <span className="sb-tier-good">≥50 good</span>{' · '}
+            <span className="sb-tier-ok">30–49 ok</span>{' · '}
+            <span className="sb-tier-bad">15–29 struggling</span>{' · '}
+            <span className="sb-tier-dead">&lt;15 unusable</span>
+            {' · '}Conv ∞ = never converged (&gt;30 s)
+          </div>
+        </div>
       )}
     </div>
   );
