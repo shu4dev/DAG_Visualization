@@ -22,7 +22,6 @@ export default function App() {
   // Load the built-in sample data
   const handleLoadSample = useCallback(() => {
     setError(null);
-    const data = parseAnyGraphInput(scrapyDeps);
     const data = generateSampleData();
     setGraphData(data);
     setSelectedNode(null);
